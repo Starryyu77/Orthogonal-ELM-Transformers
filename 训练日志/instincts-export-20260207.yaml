@@ -1,0 +1,65 @@
+# Instincts Export
+# Generated: 2026-02-07
+# Source: OELM Experiment Session
+# Description: Patterns learned during GPT vs OELM training experiment
+# Count: 5 instincts
+
+version: "2.0"
+exported_by: "claude-code-session"
+export_date: "2026-02-07T15:50:00Z"
+project: "Orthogonal ELM Transformers"
+
+instincts:
+  - id: verify-training-completion
+    trigger: "when user asks about training status"
+    action: "Check logs for 'Training complete' message and final validation metrics"
+    confidence: 0.9
+    domain: ml-workflow
+    observations: 3
+    context: "OELM experiment monitoring"
+
+  - id: remove-unverified-metrics
+    trigger: "when data cannot be verified from logs"
+    action: "Remove specific claims and replace with available qualitative information"
+    confidence: 0.85
+    domain: data-integrity
+    observations: 2
+    context: "Training time estimates removed from report due to missing timestamps"
+
+  - id: sync-before-monitor
+    trigger: "when working with remote training jobs"
+    action: "Download final model files and logs immediately after training completion"
+    confidence: 0.8
+    domain: ml-workflow
+    observations: 2
+    context: "OELM-Freeze model download after 100K steps"
+
+  - id: bilingual-report-structure
+    trigger: "when generating experiment reports for Chinese/English audience"
+    action: "Use parallel bilingual sections with clear language labeling"
+    confidence: 0.75
+    domain: documentation
+    observations: 1
+    context: "EXPERIMENT_REPORT.md format"
+
+  - id: parameter-efficiency-focus
+    trigger: "when comparing model architectures"
+    action: "Report both absolute metrics (PPL) and relative efficiency (PPL per parameter)"
+    confidence: 0.8
+    domain: ml-evaluation
+    observations: 2
+    context: "GPT vs OELM comparison analysis"
+
+notes:
+  - These instincts were extracted from the OELM training experiment session
+  - They represent workflow patterns for ML experiments with remote GPU training
+  - The session involved monitoring and documenting three model training runs
+
+session_summary:
+  total_interactions: ~50
+  duration: "~2 hours"
+  key_achievements:
+    - "Completed monitoring of OELM-Freeze training to 100K steps"
+    - "Downloaded all three model checkpoints (GPT, OELM, OELM-Freeze)"
+    - "Generated comprehensive bilingual experiment report"
+    - "Committed documentation to git repository"
