@@ -1,0 +1,2092 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>正交随机注意力Transformer研究路线图</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+    <style>
+        body { font-family: 'Noto Sans CJK SC', 'WenQuanYi Micro Hei', sans-serif; margin: 2cm; line-height: 1.6; }
+        h1, h2, h3 { color: #333; }
+        table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        code { background-color: #f5f5f5; padding: 2px 4px; border-radius: 3px; }
+        pre { background-color: #f5f5f5; padding: 1em; overflow-x: auto; border-radius: 5px; }
+    </style>
+</head>
+<body>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>FINAL_RESEARCH_ROADMAP</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <script src="/usr/share/javascript/mathjax/MathJax.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#正交随机注意力transformer完整科研路线图"><span
+class="toc-section-number">1</span>
+正交随机注意力Transformer：完整科研路线图</a>
+<ul>
+<li><a
+href="#orthogonal-random-attention-transformer-complete-research-roadmap"><span
+class="toc-section-number">1.1</span> Orthogonal Random Attention
+Transformer: Complete Research Roadmap</a></li>
+<li><a href="#文档信息"><span class="toc-section-number">1.2</span>
+文档信息</a></li>
+<li><a href="#目录"><span class="toc-section-number">1.3</span>
+目录</a></li>
+<li><a href="#研究背景与动机"><span
+class="toc-section-number">1.4</span> 1. 研究背景与动机</a>
+<ul>
+<li><a href="#研究问题"><span class="toc-section-number">1.4.1</span>
+1.1 研究问题</a></li>
+<li><a href="#核心洞察"><span class="toc-section-number">1.4.2</span>
+1.2 核心洞察</a></li>
+<li><a href="#研究动机"><span class="toc-section-number">1.4.3</span>
+1.3 研究动机</a></li>
+<li><a href="#核心创新"><span class="toc-section-number">1.4.4</span>
+1.4 核心创新</a></li>
+</ul></li>
+<li><a href="#核心理论基础"><span class="toc-section-number">1.5</span>
+2. 核心理论基础</a>
+<ul>
+<li><a href="#理论支柱综述"><span
+class="toc-section-number">1.5.1</span> 2.1 理论支柱综述</a></li>
+<li><a href="#正交随机注意力的理论保证"><span
+class="toc-section-number">1.5.2</span> 2.2
+正交随机注意力的理论保证</a></li>
+<li><a href="#梯度流分析"><span class="toc-section-number">1.5.3</span>
+2.3 梯度流分析</a></li>
+</ul></li>
+<li><a href="#方法设计"><span class="toc-section-number">1.6</span> 3.
+方法设计</a>
+<ul>
+<li><a href="#架构设计"><span class="toc-section-number">1.6.1</span>
+3.1 架构设计</a></li>
+<li><a href="#正交初始化算法"><span
+class="toc-section-number">1.6.2</span> 3.2 正交初始化算法</a></li>
+<li><a href="#与标准transformer对比"><span
+class="toc-section-number">1.6.3</span> 3.3
+与标准Transformer对比</a></li>
+<li><a href="#表达能力分析"><span
+class="toc-section-number">1.6.4</span> 3.4 表达能力分析</a></li>
+</ul></li>
+<li><a href="#实验方案"><span class="toc-section-number">1.7</span> 4.
+实验方案</a>
+<ul>
+<li><a href="#实验阶段规划"><span
+class="toc-section-number">1.7.1</span> 4.1 实验阶段规划</a></li>
+<li><a href="#基线方法"><span class="toc-section-number">1.7.2</span>
+4.2 基线方法</a></li>
+<li><a href="#消融实验设计"><span
+class="toc-section-number">1.7.3</span> 4.3 消融实验设计</a></li>
+<li><a href="#评估指标体系"><span
+class="toc-section-number">1.7.4</span> 4.4 评估指标体系</a></li>
+<li><a href="#训练配置"><span class="toc-section-number">1.7.5</span>
+4.5 训练配置</a></li>
+<li><a href="#风险识别与缓解"><span
+class="toc-section-number">1.7.6</span> 4.6 风险识别与缓解</a></li>
+</ul></li>
+<li><a href="#代码实现"><span class="toc-section-number">1.8</span> 5.
+代码实现</a>
+<ul>
+<li><a href="#项目结构"><span class="toc-section-number">1.8.1</span>
+5.1 项目结构</a></li>
+<li><a href="#核心代码实现"><span
+class="toc-section-number">1.8.2</span> 5.2 核心代码实现</a></li>
+<li><a href="#依赖包"><span class="toc-section-number">1.8.3</span> 5.3
+依赖包</a></li>
+</ul></li>
+<li><a href="#预期成果"><span class="toc-section-number">1.9</span> 6.
+预期成果</a>
+<ul>
+<li><a href="#理论贡献"><span class="toc-section-number">1.9.1</span>
+6.1 理论贡献</a></li>
+<li><a href="#方法贡献"><span class="toc-section-number">1.9.2</span>
+6.2 方法贡献</a></li>
+<li><a href="#实验预期结果"><span
+class="toc-section-number">1.9.3</span> 6.3 实验预期结果</a></li>
+<li><a href="#发表论文计划"><span
+class="toc-section-number">1.9.4</span> 6.4 发表论文计划</a></li>
+</ul></li>
+<li><a href="#研究时间表"><span class="toc-section-number">1.10</span>
+7. 研究时间表</a>
+<ul>
+<li><a href="#总体时间规划"><span
+class="toc-section-number">1.10.1</span> 7.1 总体时间规划</a></li>
+<li><a href="#详细实验计划"><span
+class="toc-section-number">1.10.2</span> 7.2 详细实验计划</a></li>
+<li><a href="#关键里程碑"><span class="toc-section-number">1.10.3</span>
+7.3 关键里程碑</a></li>
+<li><a href="#资源需求"><span class="toc-section-number">1.10.4</span>
+7.4 资源需求</a></li>
+</ul></li>
+<li><a href="#参考文献与资源"><span
+class="toc-section-number">1.11</span> 8. 参考文献与资源</a>
+<ul>
+<li><a href="#核心参考文献"><span
+class="toc-section-number">1.11.1</span> 8.1 核心参考文献</a></li>
+<li><a href="#数据集资源"><span class="toc-section-number">1.11.2</span>
+8.2 数据集资源</a></li>
+<li><a href="#开源代码参考"><span
+class="toc-section-number">1.11.3</span> 8.3 开源代码参考</a></li>
+<li><a href="#设计文档索引"><span
+class="toc-section-number">1.11.4</span> 8.4 设计文档索引</a></li>
+</ul></li>
+<li><a href="#附录a符号表"><span class="toc-section-number">1.12</span>
+附录A：符号表</a></li>
+<li><a href="#附录b术语表"><span class="toc-section-number">1.13</span>
+附录B：术语表</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 data-number="1" id="正交随机注意力transformer完整科研路线图"><span
+class="header-section-number">1</span>
+正交随机注意力Transformer：完整科研路线图</h1>
+<h2 data-number="1.1"
+id="orthogonal-random-attention-transformer-complete-research-roadmap"><span
+class="header-section-number">1.1</span> Orthogonal Random Attention
+Transformer: Complete Research Roadmap</h2>
+<hr />
+<h2 data-number="1.2" id="文档信息"><span
+class="header-section-number">1.2</span> 文档信息</h2>
+<table>
+<thead>
+<tr class="header">
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>文档版本</strong></td>
+<td>1.0</td>
+</tr>
+<tr class="even">
+<td><strong>创建日期</strong></td>
+<td>2025年</td>
+</tr>
+<tr class="odd">
+<td><strong>研究主题</strong></td>
+<td>正交随机注意力Transformer新范式</td>
+</tr>
+<tr class="even">
+<td><strong>核心创新</strong></td>
+<td>冻结正交QK投影 + 可训练V/FFN</td>
+</tr>
+<tr class="odd">
+<td><strong>文档类型</strong></td>
+<td>综合科研路线图</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 data-number="1.3" id="目录"><span
+class="header-section-number">1.3</span> 目录</h2>
+<ol type="1">
+<li><a href="#1-研究背景与动机">研究背景与动机</a></li>
+<li><a href="#2-核心理论基础">核心理论基础</a></li>
+<li><a href="#3-方法设计">方法设计</a></li>
+<li><a href="#4-实验方案">实验方案</a></li>
+<li><a href="#5-代码实现">代码实现</a></li>
+<li><a href="#6-预期成果">预期成果</a></li>
+<li><a href="#7-研究时间表">研究时间表</a></li>
+<li><a href="#8-参考文献与资源">参考文献与资源</a></li>
+</ol>
+<hr />
+<h2 data-number="1.4" id="研究背景与动机"><span
+class="header-section-number">1.4</span> 1. 研究背景与动机</h2>
+<h3 data-number="1.4.1" id="研究问题"><span
+class="header-section-number">1.4.1</span> 1.1 研究问题</h3>
+<p>Transformer架构已成为现代深度学习的核心，但其训练成本高昂。标准Transformer中的Query
+(Q) 和 Key (K)
+投影矩阵需要大量参数和计算资源进行训练。本研究探索一个核心问题：</p>
+<blockquote>
+<p><strong>“QK投影矩阵是否必须可训练？”</strong></p>
+</blockquote>
+<h3 data-number="1.4.2" id="核心洞察"><span
+class="header-section-number">1.4.2</span> 1.2 核心洞察</h3>
+<p>基于四大理论支柱，我们发现QK投影可能不需要训练：</p>
+<ol type="1">
+<li><strong>Synthesizer</strong> (Tay et al., 2021):
+随机注意力矩阵可以达到接近标准Transformer的性能</li>
+<li><strong>Reservoir Computing</strong>: 固定随机内部权重 +
+可训练读出层</li>
+<li><strong>正交神经网络</strong>: 正交约束提升训练稳定性和泛化能力</li>
+<li><strong>极限学习机 (ELM)</strong>: 随机隐藏层 + 可训练输出层 =
+通用逼近能力</li>
+</ol>
+<h3 data-number="1.4.3" id="研究动机"><span
+class="header-section-number">1.4.3</span> 1.3 研究动机</h3>
+<table>
+<thead>
+<tr class="header">
+<th>动机</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>参数效率</strong></td>
+<td>减少约50%注意力层可训练参数</td>
+</tr>
+<tr class="even">
+<td><strong>训练加速</strong></td>
+<td>更短的反向传播路径</td>
+</tr>
+<tr class="odd">
+<td><strong>稳定性提升</strong></td>
+<td>正交投影防止梯度消失/爆炸</td>
+</tr>
+<tr class="even">
+<td><strong>理论贡献</strong></td>
+<td>验证ELM思想在Transformer中的适用性</td>
+</tr>
+</tbody>
+</table>
+<h3 data-number="1.4.4" id="核心创新"><span
+class="header-section-number">1.4.4</span> 1.4 核心创新</h3>
+<p><strong>正交随机注意力 (Orthogonal Random Attention, ORA)</strong>: -
+Q、K投影矩阵使用<strong>正交随机初始化</strong>后<strong>冻结</strong> -
+V投影和FFN保持<strong>可训练</strong> - 利用正交矩阵的<strong>等距性
+(Isometry)</strong> 保持语义空间结构</p>
+<hr />
+<h2 data-number="1.5" id="核心理论基础"><span
+class="header-section-number">1.5</span> 2. 核心理论基础</h2>
+<h3 data-number="1.5.1" id="理论支柱综述"><span
+class="header-section-number">1.5.1</span> 2.1 理论支柱综述</h3>
+<h4 data-number="1.5.1.1" id="synthesizer理论"><span
+class="header-section-number">1.5.1.1</span> 2.1.1 Synthesizer理论</h4>
+<p>Synthesizer研究表明，注意力矩阵可以直接学习或随机生成，而不必依赖QK点积。</p>
+<p><strong>关键发现</strong>: - Random Synthesizer:
+在机器翻译任务上仅损失约1.2 BLEU - Dense Synthesizer:
+在GLUE基准上达到标准Transformer的95%+性能 - 结论:
+token-token交互并非绝对必要</p>
+<h4 data-number="1.5.1.2" id="reservoir-computing理论"><span
+class="header-section-number">1.5.1.2</span> 2.1.2 Reservoir
+Computing理论</h4>
+<p>Reservoir Computing的核心思想： -
+固定随机内部权重（满足回声状态性质ESP） - 仅训练读出层 -
+适用于复杂时序模式识别</p>
+<p><strong>与本研究的联系</strong>:
+QK投影可视为”reservoir”，V投影为”readout”</p>
+<h4 data-number="1.5.1.3" id="正交神经网络理论"><span
+class="header-section-number">1.5.1.3</span> 2.1.3 正交神经网络理论</h4>
+<p>正交矩阵的关键性质： - <strong>行正交</strong>: <span
+class="math inline">\(W W^T = I\)</span> - <strong>保距性</strong>:
+<span class="math inline">\(\|Wx\|_2 = \|x\|_2\)</span> -
+<strong>条件数最优</strong>: <span class="math inline">\(\kappa(W) =
+1\)</span></p>
+<p><strong>Johnson-Lindenstrauss引理</strong>:
+随机正交投影以高概率保持点间距离结构</p>
+<h4 data-number="1.5.1.4" id="极限学习机-elm理论"><span
+class="header-section-number">1.5.1.4</span> 2.1.4 极限学习机
+(ELM)理论</h4>
+<p>ELM核心定理： - 单隐藏层前馈网络(SLFN)的隐藏层权重可以随机固定 -
+仅需训练输出层权重 - 具有通用逼近能力</p>
+<p><strong>扩展到Transformer</strong>: 将ELM思想应用于注意力机制</p>
+<h3 data-number="1.5.2" id="正交随机注意力的理论保证"><span
+class="header-section-number">1.5.2</span> 2.2
+正交随机注意力的理论保证</h3>
+<h4 data-number="1.5.2.1" id="等距性定理"><span
+class="header-section-number">1.5.2.1</span> 2.2.1 等距性定理</h4>
+<p><strong>定理 (Isometry Property)</strong>: 设 <span
+class="math inline">\(W \in \mathbb{R}^{m \times n}\)</span>
+为行正交矩阵，则对任意 <span class="math inline">\(\mathbf{x} \in
+\mathbb{R}^n\)</span>:</p>
+<p><span class="math display">\[\|W\mathbf{x}\|_2 =
+\|\mathbf{x}\|_2\]</span></p>
+<p><strong>推论</strong>: 正交投影保持向量间的欧氏距离</p>
+<h4 data-number="1.5.2.2" id="通用逼近定理"><span
+class="header-section-number">1.5.2.2</span> 2.2.2 通用逼近定理</h4>
+<p><strong>定理 (正交随机Transformer的UAT)</strong>:
+对于任意连续序列到序列映射 <span class="math inline">\(f\)</span> 和任意
+<span class="math inline">\(\epsilon &gt; 0\)</span>，存在 <span
+class="math inline">\(L, d_k, d_{ff}\)</span> 使得：</p>
+<p><span class="math display">\[\sup_{X \in K} \|f(X) -
+\mathcal{T}_L(X)\| &lt; \epsilon\]</span></p>
+<p>其中 <span class="math inline">\(\mathcal{T}_L\)</span> 为 <span
+class="math inline">\(L\)</span> 层正交随机Transformer。</p>
+<h4 data-number="1.5.2.3" id="表达能力损失界"><span
+class="header-section-number">1.5.2.3</span> 2.2.3 表达能力损失界</h4>
+<p><strong>定理</strong>: 正交随机注意力的表达能力损失以 <span
+class="math inline">\(O(1/\sqrt{d_k})\)</span> 衰减：</p>
+<p><span class="math display">\[\mathcal{L}_{express}(d_k) \leq
+\sqrt{\frac{2\log(2n^2)}{d_k}}\]</span></p>
+<h3 data-number="1.5.3" id="梯度流分析"><span
+class="header-section-number">1.5.3</span> 2.3 梯度流分析</h3>
+<h4 data-number="1.5.3.1" id="正交矩阵的梯度稳定性"><span
+class="header-section-number">1.5.3.1</span> 2.3.1
+正交矩阵的梯度稳定性</h4>
+<p>对于正交矩阵 <span class="math inline">\(W\)</span>，其条件数 <span
+class="math inline">\(\kappa(W) = 1\)</span>，因此： -
+前向传播时信号不会放大或衰减 - 反向传播时梯度范数保持稳定</p>
+<h4 data-number="1.5.3.2" id="冻结qk的梯度优势"><span
+class="header-section-number">1.5.3.2</span> 2.3.2 冻结QK的梯度优势</h4>
+<p>标准Transformer反向传播： <span
+class="math display">\[\text{Grad}_{\text{std}} = \frac{\partial
+\mathcal{L}}{\partial W_Q} + \frac{\partial \mathcal{L}}{\partial W_K} +
+\frac{\partial \mathcal{L}}{\partial W_V}\]</span></p>
+<p>正交随机MHA反向传播： <span
+class="math display">\[\text{Grad}_{\text{orth}} = \frac{\partial
+\mathcal{L}}{\partial W_V} \quad \text{only}\]</span></p>
+<p><strong>节省</strong>: 66.7%的梯度计算（在注意力投影部分）</p>
+<hr />
+<h2 data-number="1.6" id="方法设计"><span
+class="header-section-number">1.6</span> 3. 方法设计</h2>
+<h3 data-number="1.6.1" id="架构设计"><span
+class="header-section-number">1.6.1</span> 3.1 架构设计</h3>
+<h4 data-number="1.6.1.1" id="正交随机注意力模块"><span
+class="header-section-number">1.6.1.1</span> 3.1.1
+正交随机注意力模块</h4>
+<pre><code>Input: X ∈ R^(N × d_model)
+
+    +-------------+    +-------------+    +-------------+
+    | Orthogonal  |    | Orthogonal  |    |  Trainable  |
+    |    W_Q      |    |    W_K      |    |     W_V     |
+    |  (Frozen)   |    |  (Frozen)   |    |             |
+    +------+------+    +------+------+    +------+------+
+           |                  |                  |
+           v                  v                  v
+         Q ∈ R^(N×d_k)  K ∈ R^(N×d_k)   V ∈ R^(N×d_v)
+           |                  |                  |
+           +------------------+                  |
+                              |                  |
+                              v                  |
+              A = softmax(QK^T / √d_k)           |
+                              |                  |
+                              v                  |
+                         O = AV ∈ R^(N×d_v)      |
+                              |                  |
+                              v                  |
+                   Output Projection W_O         |
+                              |                  |
+                              v                  |
+                    Output: O&#39; ∈ R^(N×d_model)</code></pre>
+<h4 data-number="1.6.1.2" id="完整前向传播公式"><span
+class="header-section-number">1.6.1.2</span> 3.1.2 完整前向传播公式</h4>
+<p><strong>单头正交随机注意力</strong>:</p>
+<p><span class="math display">\[\mathbf{Q} =
+\mathbf{X}\mathbf{W}_Q^{\text{frozen}} \in \mathbb{R}^{N \times
+d_k}\]</span> <span class="math display">\[\mathbf{K} =
+\mathbf{X}\mathbf{W}_K^{\text{frozen}} \in \mathbb{R}^{N \times
+d_k}\]</span> <span class="math display">\[\mathbf{V} =
+\mathbf{X}\mathbf{W}_V^{\text{train}} \in \mathbb{R}^{N \times
+d_v}\]</span></p>
+<p><span class="math display">\[\mathbf{A} =
+\text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right) \in
+\mathbb{R}^{N \times N}\]</span></p>
+<p><span class="math display">\[\mathbf{O} = \mathbf{A}\mathbf{V} \in
+\mathbb{R}^{N \times d_v}\]</span></p>
+<p><strong>多头扩展</strong>:</p>
+<p><span class="math display">\[\text{MultiHead}(\mathbf{X}) =
+\text{Concat}(\text{head}_1, \ldots,
+\text{head}_h)\mathbf{W}_O\]</span></p>
+<h3 data-number="1.6.2" id="正交初始化算法"><span
+class="header-section-number">1.6.2</span> 3.2 正交初始化算法</h3>
+<h4 data-number="1.6.2.1" id="qr分解法推荐"><span
+class="header-section-number">1.6.2.1</span> 3.2.1 QR分解法（推荐）</h4>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Algorithm: QR分解正交初始化</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>─────────────────────────────</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>Input:  矩阵维度 m, n 且 m ≥ n</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>Output: 列正交矩阵 W ∈ R<span class="op">^</span>{m×n}</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span>:  生成随机矩阵 A <span class="op">~</span> N(<span class="dv">0</span>,<span class="dv">1</span>) ∈ R<span class="op">^</span>{m×n}</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span>:  计算QR分解: A <span class="op">=</span> QR</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span>:  W ← Q[:, :n]        <span class="op">//</span> 取前n列</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="dv">4</span>:  <span class="cf">return</span> W</span></code></pre></div>
+<p><strong>时间复杂度</strong>: <span
+class="math inline">\(O(mn^2)\)</span></p>
+<p><strong>数值稳定性</strong>: ★★★★☆</p>
+<h4 data-number="1.6.2.2" id="方法对比"><span
+class="header-section-number">1.6.2.2</span> 3.2.2 方法对比</h4>
+<table>
+<thead>
+<tr class="header">
+<th>方法</th>
+<th>时间复杂度</th>
+<th>数值稳定性</th>
+<th>正交性误差</th>
+<th>推荐场景</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>QR分解</strong></td>
+<td><span class="math inline">\(O(mn^2)\)</span></td>
+<td>★★★★☆</td>
+<td><span class="math inline">\(10^{-14}\)</span></td>
+<td>通用场景</td>
+</tr>
+<tr class="even">
+<td><strong>SVD分解</strong></td>
+<td><span class="math inline">\(O(m^2n)\)</span></td>
+<td>★★★★★</td>
+<td><span class="math inline">\(10^{-16}\)</span></td>
+<td>高精度要求</td>
+</tr>
+<tr class="odd">
+<td><strong>Householder</strong></td>
+<td><span class="math inline">\(O(mn^2)\)</span></td>
+<td>★★★★★</td>
+<td><span class="math inline">\(10^{-15}\)</span></td>
+<td>显式需要Q</td>
+</tr>
+<tr class="even">
+<td><strong>Cayley变换</strong></td>
+<td><span class="math inline">\(O(m^3)\)</span></td>
+<td>★★★☆☆</td>
+<td><span class="math inline">\(10^{-13}\)</span></td>
+<td>可学习参数化</td>
+</tr>
+</tbody>
+</table>
+<h3 data-number="1.6.3" id="与标准transformer对比"><span
+class="header-section-number">1.6.3</span> 3.3
+与标准Transformer对比</h3>
+<h4 data-number="1.6.3.1" id="架构对比"><span
+class="header-section-number">1.6.3.1</span> 3.3.1 架构对比</h4>
+<table>
+<thead>
+<tr class="header">
+<th>组件</th>
+<th>标准Transformer</th>
+<th>正交随机注意力</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\mathbf{W}_Q\)</span></td>
+<td>可训练</td>
+<td><strong>冻结（正交随机）</strong></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\mathbf{W}_K\)</span></td>
+<td>可训练</td>
+<td><strong>冻结（正交随机）</strong></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\mathbf{W}_V\)</span></td>
+<td>可训练</td>
+<td>可训练</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\mathbf{W}_O\)</span></td>
+<td>可训练</td>
+<td>可训练</td>
+</tr>
+<tr class="odd">
+<td>FFN</td>
+<td>可训练</td>
+<td>可训练</td>
+</tr>
+<tr class="even">
+<td>LayerNorm</td>
+<td>可训练</td>
+<td>可训练</td>
+</tr>
+</tbody>
+</table>
+<h4 data-number="1.6.3.2" id="参数量对比"><span
+class="header-section-number">1.6.3.2</span> 3.3.2 参数量对比</h4>
+<p>假设 <span class="math inline">\(d_{model} = 768\)</span>, <span
+class="math inline">\(h = 12\)</span>, <span class="math inline">\(L =
+12\)</span>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>模型</th>
+<th>总参数量</th>
+<th>可训练参数</th>
+<th>冻结参数</th>
+<th>训练效率</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>标准Transformer</td>
+<td>84.95M</td>
+<td>84.95M (100%)</td>
+<td>0</td>
+<td>1x</td>
+</tr>
+<tr class="even">
+<td>正交随机注意力</td>
+<td>84.95M</td>
+<td>70.80M (83.3%)</td>
+<td>14.15M (16.7%)</td>
+<td><strong>1.2x</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>节省比例</strong>: 16.7%的可训练参数</p>
+<h4 data-number="1.6.3.3" id="计算复杂度对比"><span
+class="header-section-number">1.6.3.3</span> 3.3.3 计算复杂度对比</h4>
+<table>
+<thead>
+<tr class="header">
+<th>指标</th>
+<th>标准Transformer</th>
+<th>正交随机注意力</th>
+<th>改进</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>前向时间复杂度</strong></td>
+<td><span class="math inline">\(O(N^2d + Nd^2)\)</span></td>
+<td><span class="math inline">\(O(N^2d + Nd^2)\)</span></td>
+<td>相同</td>
+</tr>
+<tr class="even">
+<td><strong>反向时间复杂度</strong></td>
+<td><span class="math inline">\(O(N^2d + Nd^2)\)</span></td>
+<td><span class="math inline">\(O(Nd^2)\)</span></td>
+<td><strong>显著改进</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>空间复杂度</strong></td>
+<td><span class="math inline">\(O(N^2 + Nd)\)</span></td>
+<td><span class="math inline">\(O(N^2 + Nd)\)</span></td>
+<td>相同</td>
+</tr>
+<tr class="even">
+<td><strong>可训练参数</strong></td>
+<td><span class="math inline">\(4d^2\)</span></td>
+<td><span class="math inline">\(2d^2\)</span></td>
+<td><strong>减少50%</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>优化器状态</strong></td>
+<td><span class="math inline">\(8d^2\)</span></td>
+<td><span class="math inline">\(4d^2\)</span></td>
+<td><strong>减少50%</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 data-number="1.6.4" id="表达能力分析"><span
+class="header-section-number">1.6.4</span> 3.4 表达能力分析</h3>
+<h4 data-number="1.6.4.1" id="表达能力保持"><span
+class="header-section-number">1.6.4.1</span> 3.4.1 表达能力保持</h4>
+<p><strong>定理</strong>: 正交随机注意力在概率意义下保持通用逼近能力</p>
+<p><strong>关键洞察</strong>: 1. 随机投影保持距离结构（JL引理） 2.
+可训练的V投影补偿QK冻结 3. FFN提供额外的表达能力</p>
+<h4 data-number="1.6.4.2" id="表达能力损失上界"><span
+class="header-section-number">1.6.4.2</span> 3.4.2 表达能力损失上界</h4>
+<p><span class="math display">\[\mathbb{E}[\|\hat{f}_{ora} - f^*\|^2] -
+\|\hat{f}_{std} - f^*\|^2 \leq \frac{C}{\sqrt{d_k}}\]</span></p>
+<p><strong>实践建议</strong>: - 高精度任务: <span
+class="math inline">\(d_k = 64-128\)</span> - 效率优先任务: <span
+class="math inline">\(d_k = 32-64\)</span> - 资源受限场景: <span
+class="math inline">\(d_k = 16-32\)</span></p>
+<hr />
+<h2 data-number="1.7" id="实验方案"><span
+class="header-section-number">1.7</span> 4. 实验方案</h2>
+<h3 data-number="1.7.1" id="实验阶段规划"><span
+class="header-section-number">1.7.1</span> 4.1 实验阶段规划</h3>
+<table>
+<thead>
+<tr class="header">
+<th>阶段</th>
+<th>数据集</th>
+<th>规模</th>
+<th>目的</th>
+<th>预计时间</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>阶段一</td>
+<td>TinyStories</td>
+<td>~2B tokens</td>
+<td>快速验证架构可行性</td>
+<td>数小时-1天</td>
+</tr>
+<tr class="even">
+<td>阶段二</td>
+<td>OpenWebText</td>
+<td>~25B tokens</td>
+<td>中等规模性能验证</td>
+<td>3-7天</td>
+</tr>
+<tr class="odd">
+<td>阶段三</td>
+<td>SlimPajama</td>
+<td>100B+ tokens</td>
+<td>大规模性能对比</td>
+<td>2-4周</td>
+</tr>
+</tbody>
+</table>
+<h3 data-number="1.7.2" id="基线方法"><span
+class="header-section-number">1.7.2</span> 4.2 基线方法</h3>
+<table>
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 18%" />
+<col style="width: 27%" />
+<col style="width: 27%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>基线方法</th>
+<th>类型</th>
+<th>核心特点</th>
+<th>选择理由</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Vanilla Transformer</strong></td>
+<td>标准基线</td>
+<td>标准QK^T点积注意力</td>
+<td>最广泛使用的基准</td>
+</tr>
+<tr class="even">
+<td><strong>Random Gaussian QK</strong></td>
+<td>消融基线</td>
+<td>高斯随机初始化QK后冻结</td>
+<td>验证正交vs高斯的效果</td>
+</tr>
+<tr class="odd">
+<td><strong>Synthesizer (Random)</strong></td>
+<td>方法对比</td>
+<td>随机注意力矩阵</td>
+<td>验证token-token交互必要性</td>
+</tr>
+<tr class="even">
+<td><strong>Synthesizer (Factorized)</strong></td>
+<td>方法对比</td>
+<td>低秩分解随机矩阵</td>
+<td>对比低秩近似效果</td>
+</tr>
+<tr class="odd">
+<td><strong>Partial Frozen Strategy</strong></td>
+<td>渐进式</td>
+<td>部分层冻结训练</td>
+<td>验证渐进式训练策略</td>
+</tr>
+</tbody>
+</table>
+<h3 data-number="1.7.3" id="消融实验设计"><span
+class="header-section-number">1.7.3</span> 4.3 消融实验设计</h3>
+<table>
+<thead>
+<tr class="header">
+<th>实验编号</th>
+<th>实验名称</th>
+<th>变量</th>
+<th>控制条件</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A1</td>
+<td>正交性 vs 高斯随机</td>
+<td>初始化分布</td>
+<td>冻结QK，可训练V</td>
+</tr>
+<tr class="even">
+<td>A2</td>
+<td>冻结 vs 可训练QK</td>
+<td>QK可训练性</td>
+<td>正交初始化</td>
+</tr>
+<tr class="odd">
+<td>A3</td>
+<td>不同头数影响</td>
+<td>注意力头数 H</td>
+<td>固定总维度 d_model</td>
+</tr>
+<tr class="even">
+<td>A4</td>
+<td>不同维度影响</td>
+<td>维度 d_k</td>
+<td>固定头数 H</td>
+</tr>
+<tr class="odd">
+<td>A5</td>
+<td>不同序列长度</td>
+<td>序列长度 N</td>
+<td>固定模型配置</td>
+</tr>
+<tr class="even">
+<td>A6</td>
+<td>不同层数影响</td>
+<td>层数 L</td>
+<td>固定每层配置</td>
+</tr>
+<tr class="odd">
+<td>A7</td>
+<td>正交化方法对比</td>
+<td>QR/SVD/Householder</td>
+<td>冻结QK</td>
+</tr>
+</tbody>
+</table>
+<h3 data-number="1.7.4" id="评估指标体系"><span
+class="header-section-number">1.7.4</span> 4.4 评估指标体系</h3>
+<h4 data-number="1.7.4.1" id="主要评估指标"><span
+class="header-section-number">1.7.4.1</span> 4.4.1 主要评估指标</h4>
+<table>
+<thead>
+<tr class="header">
+<th>指标类别</th>
+<th>具体指标</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>性能指标</strong></td>
+<td>Perplexity (PPL)</td>
+<td>语言建模质量</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>BLEU Score</td>
+<td>机器翻译质量</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>Accuracy</td>
+<td>分类任务准确率</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>F1 Score</td>
+<td>综合性能评估</td>
+</tr>
+<tr class="odd">
+<td><strong>效率指标</strong></td>
+<td>Training Time</td>
+<td>训练时间</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>Inference Speed</td>
+<td>推理速度</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>Memory Usage</td>
+<td>显存占用</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>FLOPs</td>
+<td>计算量</td>
+</tr>
+<tr class="odd">
+<td><strong>稳定性指标</strong></td>
+<td>Loss Variance</td>
+<td>损失方差</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>Gradient Norm</td>
+<td>梯度范数</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>Convergence Speed</td>
+<td>收敛速度</td>
+</tr>
+</tbody>
+</table>
+<h4 data-number="1.7.4.2" id="统计显著性检验"><span
+class="header-section-number">1.7.4.2</span> 4.4.2 统计显著性检验</h4>
+<ul>
+<li>多次运行（至少5个不同种子）</li>
+<li>计算均值和标准差</li>
+<li>使用t-test或Wilcoxon signed-rank test</li>
+<li>报告p-value和效应量(Cohen’s d)</li>
+</ul>
+<h3 data-number="1.7.5" id="训练配置"><span
+class="header-section-number">1.7.5</span> 4.5 训练配置</h3>
+<h4 data-number="1.7.5.1" id="模型配置"><span
+class="header-section-number">1.7.5.1</span> 4.5.1 模型配置</h4>
+<table>
+<thead>
+<tr class="header">
+<th>参数</th>
+<th>Small</th>
+<th>Base</th>
+<th>Large</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>层数</strong></td>
+<td>6</td>
+<td>12</td>
+<td>24</td>
+</tr>
+<tr class="even">
+<td><strong>隐藏维度</strong></td>
+<td>512</td>
+<td>768</td>
+<td>1024</td>
+</tr>
+<tr class="odd">
+<td><strong>注意力头数</strong></td>
+<td>8</td>
+<td>12</td>
+<td>16</td>
+</tr>
+<tr class="even">
+<td><strong>每头维度</strong></td>
+<td>64</td>
+<td>64</td>
+<td>64</td>
+</tr>
+<tr class="odd">
+<td><strong>FFN维度</strong></td>
+<td>2048</td>
+<td>3072</td>
+<td>4096</td>
+</tr>
+<tr class="even">
+<td><strong>Dropout率</strong></td>
+<td>0.1</td>
+<td>0.1</td>
+<td>0.1</td>
+</tr>
+<tr class="odd">
+<td><strong>最大序列长度</strong></td>
+<td>512</td>
+<td>512</td>
+<td>512</td>
+</tr>
+<tr class="even">
+<td><strong>词表大小</strong></td>
+<td>32000</td>
+<td>32000</td>
+<td>32000</td>
+</tr>
+<tr class="odd">
+<td><strong>参数量</strong></td>
+<td>30.6M</td>
+<td>88.3M</td>
+<td>259.4M</td>
+</tr>
+</tbody>
+</table>
+<h4 data-number="1.7.5.2" id="优化器配置"><span
+class="header-section-number">1.7.5.2</span> 4.5.2 优化器配置</h4>
+<table>
+<thead>
+<tr class="header">
+<th>参数</th>
+<th>Small</th>
+<th>Base</th>
+<th>Large</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>优化器</strong></td>
+<td>AdamW</td>
+<td>AdamW</td>
+<td>AdamW</td>
+</tr>
+<tr class="even">
+<td><strong>学习率</strong></td>
+<td>5e-4</td>
+<td>3e-4</td>
+<td>2e-4</td>
+</tr>
+<tr class="odd">
+<td><strong>Betas</strong></td>
+<td>(0.9, 0.98)</td>
+<td>(0.9, 0.98)</td>
+<td>(0.9, 0.98)</td>
+</tr>
+<tr class="even">
+<td><strong>Epsilon</strong></td>
+<td>1e-8</td>
+<td>1e-8</td>
+<td>1e-8</td>
+</tr>
+<tr class="odd">
+<td><strong>权重衰减</strong></td>
+<td>0.01</td>
+<td>0.01</td>
+<td>0.01</td>
+</tr>
+<tr class="even">
+<td><strong>梯度裁剪</strong></td>
+<td>1.0</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+</tbody>
+</table>
+<h4 data-number="1.7.5.3" id="学习率调度"><span
+class="header-section-number">1.7.5.3</span> 4.5.3 学习率调度</h4>
+<table>
+<thead>
+<tr class="header">
+<th>参数</th>
+<th>Small</th>
+<th>Base</th>
+<th>Large</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Warmup步数</strong></td>
+<td>4000</td>
+<td>8000</td>
+<td>12000</td>
+</tr>
+<tr class="even">
+<td><strong>衰减策略</strong></td>
+<td>Cosine</td>
+<td>Cosine with Restarts</td>
+<td>Polynomial</td>
+</tr>
+<tr class="odd">
+<td><strong>最小学习率比例</strong></td>
+<td>0.1</td>
+<td>0.1</td>
+<td>0.05</td>
+</tr>
+<tr class="even">
+<td><strong>总训练步数</strong></td>
+<td>100000</td>
+<td>300000</td>
+<td>500000</td>
+</tr>
+</tbody>
+</table>
+<h3 data-number="1.7.6" id="风险识别与缓解"><span
+class="header-section-number">1.7.6</span> 4.6 风险识别与缓解</h3>
+<table>
+<thead>
+<tr class="header">
+<th>风险</th>
+<th>可能性</th>
+<th>影响</th>
+<th>缓解策略</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>表达能力不足</td>
+<td>中</td>
+<td>高</td>
+<td>混合架构、增加头数</td>
+</tr>
+<tr class="even">
+<td>任务适配性问题</td>
+<td>中</td>
+<td>高</td>
+<td>任务特定混合比例</td>
+</tr>
+<tr class="odd">
+<td>正交初始化数值不稳定</td>
+<td>低</td>
+<td>高</td>
+<td>使用稳定的QR分解</td>
+</tr>
+<tr class="even">
+<td>冻结QK导致欠拟合</td>
+<td>中</td>
+<td>中</td>
+<td>增加可训练的V矩阵容量</td>
+</tr>
+<tr class="odd">
+<td>多头独立性假设不成立</td>
+<td>中</td>
+<td>中</td>
+<td>结构化正交矩阵</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 data-number="1.8" id="代码实现"><span
+class="header-section-number">1.8</span> 5. 代码实现</h2>
+<h3 data-number="1.8.1" id="项目结构"><span
+class="header-section-number">1.8.1</span> 5.1 项目结构</h3>
+<pre><code>/mnt/okcomputer/output/
+├── models/
+│   ├── __init__.py
+│   ├── modeling_oelm.py      # 正交随机注意力模型实现
+│   ├── modeling_gpt.py       # 标准GPT基线模型
+│   └── orthogonal_linear.py  # 正交线性层实现
+├── data/
+│   ├── __init__.py
+│   ├── prepare_data.py       # 数据预处理脚本
+│   └── datasets.py           # 数据集定义
+├── training/
+│   ├── __init__.py
+│   ├── train.py              # 主训练脚本
+│   ├── trainer.py            # 训练器类
+│   └── optimizer.py          # 优化器配置
+├── evaluation/
+│   ├── __init__.py
+│   ├── benchmark.py          # 基准测试脚本
+│   └── metrics.py            # 评估指标
+├── configs/
+│   ├── small.yaml
+│   ├── base.yaml
+│   └── large.yaml
+├── tests/
+│   ├── test_orthogonal.py
+│   ├── test_attention.py
+│   └── test_model.py
+├── scripts/
+│   ├── run_experiment.sh
+│   └── run_benchmark.sh
+├── requirements.txt
+├── README.md
+└── code_review.md</code></pre>
+<h3 data-number="1.8.2" id="核心代码实现"><span
+class="header-section-number">1.8.2</span> 5.2 核心代码实现</h3>
+<h4 data-number="1.8.2.1" id="正交线性层"><span
+class="header-section-number">1.8.2.1</span> 5.2.1 正交线性层</h4>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn <span class="im">as</span> nn</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn.functional <span class="im">as</span> F</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> OrthogonalLinear(nn.Module):</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;正交线性层，使用冻结的正交随机权重。&quot;&quot;&quot;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, in_features: <span class="bu">int</span>, out_features: <span class="bu">int</span>, </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                 bias: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>, device: <span class="bu">str</span> <span class="op">=</span> <span class="st">&#39;cuda&#39;</span>):</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.in_features <span class="op">=</span> in_features</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.out_features <span class="op">=</span> out_features</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 创建冻结的权重参数</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.weight <span class="op">=</span> nn.Parameter(</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>            torch.empty(out_features, in_features, device<span class="op">=</span>device),</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>            requires_grad<span class="op">=</span><span class="va">False</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._init_orthogonal()</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> bias:</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.bias <span class="op">=</span> nn.Parameter(torch.zeros(out_features, device<span class="op">=</span>device))</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.register_parameter(<span class="st">&#39;bias&#39;</span>, <span class="va">None</span>)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _init_orthogonal(<span class="va">self</span>):</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;使用QR分解生成正交矩阵。&quot;&quot;&quot;</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>        A <span class="op">=</span> torch.randn(<span class="va">self</span>.out_features, <span class="va">self</span>.in_features, </span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>                       device<span class="op">=</span><span class="va">self</span>.weight.device)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>        Q, R <span class="op">=</span> torch.linalg.qr(A)</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>        d <span class="op">=</span> torch.diag(R)</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>        ph <span class="op">=</span> d <span class="op">/</span> torch.<span class="bu">abs</span>(d)</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>        Q <span class="op">=</span> Q <span class="op">*</span> ph.unsqueeze(<span class="dv">0</span>)</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.weight.data <span class="op">=</span> Q</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x: torch.Tensor) <span class="op">-&gt;</span> torch.Tensor:</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> F.linear(x, <span class="va">self</span>.weight, <span class="va">self</span>.bias)</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> check_orthogonality(<span class="va">self</span>):</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;验证正交性&quot;&quot;&quot;</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> torch.no_grad():</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>            WWT <span class="op">=</span> torch.mm(<span class="va">self</span>.weight, <span class="va">self</span>.weight.t())</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>            I <span class="op">=</span> torch.eye(<span class="va">self</span>.out_features, device<span class="op">=</span><span class="va">self</span>.weight.device)</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>            error <span class="op">=</span> torch.norm(WWT <span class="op">-</span> I, p<span class="op">=</span><span class="st">&#39;fro&#39;</span>)</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> error.item()</span></code></pre></div>
+<h4 data-number="1.8.2.2" id="正交随机注意力头"><span
+class="header-section-number">1.8.2.2</span> 5.2.2 正交随机注意力头</h4>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> OrthogonalAttentionHead(nn.Module):</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;正交随机注意力头。&quot;&quot;&quot;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, d_model: <span class="bu">int</span>, d_k: <span class="bu">int</span>, d_v: <span class="bu">int</span>, dropout: <span class="bu">float</span> <span class="op">=</span> <span class="fl">0.0</span>):</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.d_k <span class="op">=</span> d_k</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.d_v <span class="op">=</span> d_v</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 冻结的正交随机投影</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.W_Q <span class="op">=</span> OrthogonalLinear(d_model, d_k, bias<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.W_K <span class="op">=</span> OrthogonalLinear(d_model, d_k, bias<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 可训练的Value投影</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.W_V <span class="op">=</span> nn.Linear(d_model, d_v, bias<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.dropout <span class="op">=</span> nn.Dropout(dropout) <span class="cf">if</span> dropout <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="va">None</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x: torch.Tensor, mask <span class="op">=</span> <span class="va">None</span>):</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        Q <span class="op">=</span> <span class="va">self</span>.W_Q(x)  <span class="co"># [B, N, d_k]</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        K <span class="op">=</span> <span class="va">self</span>.W_K(x)  <span class="co"># [B, N, d_k]</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        V <span class="op">=</span> <span class="va">self</span>.W_V(x)  <span class="co"># [B, N, d_v]</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 注意力分数</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        scores <span class="op">=</span> torch.matmul(Q, K.transpose(<span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>)) <span class="op">/</span> (<span class="va">self</span>.d_k <span class="op">**</span> <span class="fl">0.5</span>)</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 应用mask</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> mask <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>            scores <span class="op">=</span> scores.masked_fill(mask <span class="op">==</span> <span class="dv">0</span>, <span class="bu">float</span>(<span class="st">&#39;-inf&#39;</span>))</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Softmax</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>        attn_weights <span class="op">=</span> F.softmax(scores, dim<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Dropout</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="va">self</span>.dropout <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>            attn_weights <span class="op">=</span> <span class="va">self</span>.dropout(attn_weights)</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 输出</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>        output <span class="op">=</span> torch.matmul(attn_weights, V)</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> output, attn_weights</span></code></pre></div>
+<h4 data-number="1.8.2.3" id="多头正交随机注意力"><span
+class="header-section-number">1.8.2.3</span> 5.2.3
+多头正交随机注意力</h4>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> OrthogonalMultiHeadAttention(nn.Module):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;多头正交随机注意力。&quot;&quot;&quot;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, d_model: <span class="bu">int</span> <span class="op">=</span> <span class="dv">768</span>, num_heads: <span class="bu">int</span> <span class="op">=</span> <span class="dv">12</span>, dropout: <span class="bu">float</span> <span class="op">=</span> <span class="fl">0.0</span>):</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">assert</span> d_model <span class="op">%</span> num_heads <span class="op">==</span> <span class="dv">0</span>, <span class="st">&quot;d_model必须能被num_heads整除&quot;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.d_model <span class="op">=</span> d_model</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.num_heads <span class="op">=</span> num_heads</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.d_k <span class="op">=</span> d_model <span class="op">//</span> num_heads</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.d_v <span class="op">=</span> d_model <span class="op">//</span> num_heads</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 创建多个正交随机注意力头</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.heads <span class="op">=</span> nn.ModuleList([</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>            OrthogonalAttentionHead(d_model, <span class="va">self</span>.d_k, <span class="va">self</span>.d_v, dropout)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(num_heads)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        ])</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 输出投影（可训练）</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.W_O <span class="op">=</span> nn.Linear(d_model, d_model, bias<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.dropout <span class="op">=</span> nn.Dropout(dropout) <span class="cf">if</span> dropout <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="va">None</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x, mask<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 计算每个头的输出</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>        head_outputs <span class="op">=</span> []</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> head <span class="kw">in</span> <span class="va">self</span>.heads:</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>            out, _ <span class="op">=</span> head(x, mask)</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>            head_outputs.append(out)</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 拼接</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>        concatenated <span class="op">=</span> torch.cat(head_outputs, dim<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 输出投影</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>        output <span class="op">=</span> <span class="va">self</span>.W_O(concatenated)</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="va">self</span>.dropout <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>            output <span class="op">=</span> <span class="va">self</span>.dropout(output)</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> output</span></code></pre></div>
+<h3 data-number="1.8.3" id="依赖包"><span
+class="header-section-number">1.8.3</span> 5.3 依赖包</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode txt"><code class="sourceCode default"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a># requirements.txt</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a># 核心依赖</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>torch&gt;=2.0.0</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>transformers&gt;=4.30.0</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>datasets&gt;=2.12.0</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a># 训练优化</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>accelerate&gt;=0.20.0</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>deepspeed&gt;=0.9.0</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a># 数据处理</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>tokenizers&gt;=0.13.0</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a># 评估指标</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>sacrebleu&gt;=2.3.1</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>scikit-learn&gt;=1.2.0</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a># 日志和可视化</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>wandb&gt;=0.15.0</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>tensorboard&gt;=2.13.0</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>matplotlib&gt;=3.7.0</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a># 开发工具</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>pytest&gt;=7.3.0</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a># 其他</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>numpy&gt;=1.24.0</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>tqdm&gt;=4.65.0</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>pyyaml&gt;=6.0</span></code></pre></div>
+<hr />
+<h2 data-number="1.9" id="预期成果"><span
+class="header-section-number">1.9</span> 6. 预期成果</h2>
+<h3 data-number="1.9.1" id="理论贡献"><span
+class="header-section-number">1.9.1</span> 6.1 理论贡献</h3>
+<table>
+<thead>
+<tr class="header">
+<th>贡献</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>ELM理论扩展</strong></td>
+<td>将极限学习机思想扩展到多层Transformer架构</td>
+</tr>
+<tr class="even">
+<td><strong>正交注意力理论</strong></td>
+<td>建立正交随机注意力的理论基础</td>
+</tr>
+<tr class="odd">
+<td><strong>表达能力分析</strong></td>
+<td>证明冻结QK在概率意义下保持通用逼近能力</td>
+</tr>
+<tr class="even">
+<td><strong>效率-表达能力权衡</strong></td>
+<td>量化分析表达能力损失与参数效率的权衡</td>
+</tr>
+</tbody>
+</table>
+<h3 data-number="1.9.2" id="方法贡献"><span
+class="header-section-number">1.9.2</span> 6.2 方法贡献</h3>
+<table>
+<thead>
+<tr class="header">
+<th>贡献</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>正交随机注意力</strong></td>
+<td>提出新的注意力机制范式</td>
+</tr>
+<tr class="even">
+<td><strong>正交初始化算法</strong></td>
+<td>系统比较多种正交初始化方法</td>
+</tr>
+<tr class="odd">
+<td><strong>混合架构设计</strong></td>
+<td>探索自适应冻结/可学习比例策略</td>
+</tr>
+<tr class="even">
+<td><strong>训练策略</strong></td>
+<td>提出渐进式解冻等训练技巧</td>
+</tr>
+</tbody>
+</table>
+<h3 data-number="1.9.3" id="实验预期结果"><span
+class="header-section-number">1.9.3</span> 6.3 实验预期结果</h3>
+<table>
+<thead>
+<tr class="header">
+<th>指标</th>
+<th>预期结果</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>参数节省</strong></td>
+<td>可训练参数减少16.7-50%</td>
+</tr>
+<tr class="even">
+<td><strong>训练加速</strong></td>
+<td>训练速度提升15-35%</td>
+</tr>
+<tr class="odd">
+<td><strong>显存节省</strong></td>
+<td>每层显存节省37.5%</td>
+</tr>
+<tr class="even">
+<td><strong>性能差距</strong></td>
+<td>与标准Transformer差距&lt;5%</td>
+</tr>
+</tbody>
+</table>
+<h3 data-number="1.9.4" id="发表论文计划"><span
+class="header-section-number">1.9.4</span> 6.4 发表论文计划</h3>
+<p><strong>目标会议/期刊</strong>: - NeurIPS (Conference on Neural
+Information Processing Systems) - ICML (International Conference on
+Machine Learning) - ICLR (International Conference on Learning
+Representations) - AAAI (Association for the Advancement of Artificial
+Intelligence)</p>
+<p><strong>论文结构</strong>: 1. Introduction 2. Related Work 3.
+Theoretical Analysis 4. Methodology 5. Experiments 6. Results and
+Analysis 7. Conclusion</p>
+<hr />
+<h2 data-number="1.10" id="研究时间表"><span
+class="header-section-number">1.10</span> 7. 研究时间表</h2>
+<h3 data-number="1.10.1" id="总体时间规划"><span
+class="header-section-number">1.10.1</span> 7.1 总体时间规划</h3>
+<table>
+<thead>
+<tr class="header">
+<th>阶段</th>
+<th>内容</th>
+<th>预计时间</th>
+<th>累计时间</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>准备</td>
+<td>环境搭建、数据准备、代码实现</td>
+<td>3-4天</td>
+<td>3-4天</td>
+</tr>
+<tr class="even">
+<td>阶段1</td>
+<td>核心对比实验</td>
+<td>3-5天</td>
+<td>6-9天</td>
+</tr>
+<tr class="odd">
+<td>阶段2</td>
+<td>Synthesizer对比</td>
+<td>2-3天</td>
+<td>8-12天</td>
+</tr>
+<tr class="even">
+<td>阶段3</td>
+<td>消融实验A1-A4</td>
+<td>4-6天</td>
+<td>12-18天</td>
+</tr>
+<tr class="odd">
+<td>阶段4</td>
+<td>消融实验A5-A7</td>
+<td>3-4天</td>
+<td>15-22天</td>
+</tr>
+<tr class="even">
+<td>阶段5</td>
+<td>不同规模实验</td>
+<td>5-7天</td>
+<td>20-29天</td>
+</tr>
+<tr class="odd">
+<td>阶段6</td>
+<td>多任务迁移</td>
+<td>3-5天</td>
+<td>23-34天</td>
+</tr>
+<tr class="even">
+<td>分析</td>
+<td>结果分析、可视化</td>
+<td>2-3天</td>
+<td>25-37天</td>
+</tr>
+</tbody>
+</table>
+<p><strong>总计：约25-37天（4-5周）</strong></p>
+<h3 data-number="1.10.2" id="详细实验计划"><span
+class="header-section-number">1.10.2</span> 7.2 详细实验计划</h3>
+<h4 data-number="1.10.2.1" id="week-1-准备与验证"><span
+class="header-section-number">1.10.2.1</span> Week 1: 准备与验证</h4>
+<table>
+<thead>
+<tr class="header">
+<th>天数</th>
+<th>任务</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Day 1</td>
+<td>环境搭建、依赖安装</td>
+<td>可运行环境</td>
+</tr>
+<tr class="even">
+<td>Day 2</td>
+<td>数据下载与预处理</td>
+<td>准备好的数据集</td>
+</tr>
+<tr class="odd">
+<td>Day 3-4</td>
+<td>代码实现、单元测试</td>
+<td>可运行的原型</td>
+</tr>
+<tr class="even">
+<td>Day 5-7</td>
+<td>WikiText-2快速验证</td>
+<td>验证结果</td>
+</tr>
+</tbody>
+</table>
+<h4 data-number="1.10.2.2" id="week-2-核心对比"><span
+class="header-section-number">1.10.2.2</span> Week 2: 核心对比</h4>
+<table>
+<thead>
+<tr class="header">
+<th>天数</th>
+<th>任务</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Day 8-10</td>
+<td>Vanilla Transformer训练</td>
+<td>基线结果</td>
+</tr>
+<tr class="even">
+<td>Day 11-12</td>
+<td>Orthogonal Random训练</td>
+<td>主方法结果</td>
+</tr>
+<tr class="odd">
+<td>Day 13-14</td>
+<td>Gaussian Random训练</td>
+<td>消融基线结果</td>
+</tr>
+</tbody>
+</table>
+<h4 data-number="1.10.2.3" id="week-3-消融与对比"><span
+class="header-section-number">1.10.2.3</span> Week 3: 消融与对比</h4>
+<table>
+<thead>
+<tr class="header">
+<th>天数</th>
+<th>任务</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Day 15-16</td>
+<td>A1-A2消融实验</td>
+<td>初始化与可训练性结果</td>
+</tr>
+<tr class="even">
+<td>Day 17-18</td>
+<td>Synthesizer对比</td>
+<td>方法对比结果</td>
+</tr>
+<tr class="odd">
+<td>Day 19-21</td>
+<td>A3-A4消融实验</td>
+<td>架构参数影响结果</td>
+</tr>
+</tbody>
+</table>
+<h4 data-number="1.10.2.4" id="week-4-5-扩展实验"><span
+class="header-section-number">1.10.2.4</span> Week 4-5: 扩展实验</h4>
+<table>
+<thead>
+<tr class="header">
+<th>天数</th>
+<th>任务</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Day 22-24</td>
+<td>A5-A7消融实验</td>
+<td>规模与方法对比结果</td>
+</tr>
+<tr class="even">
+<td>Day 25-28</td>
+<td>不同规模实验</td>
+<td>可扩展性结果</td>
+</tr>
+<tr class="odd">
+<td>Day 29-31</td>
+<td>多任务迁移</td>
+<td>泛化能力结果</td>
+</tr>
+<tr class="even">
+<td>Day 32-34</td>
+<td>结果分析、可视化</td>
+<td>分析图表</td>
+</tr>
+</tbody>
+</table>
+<h3 data-number="1.10.3" id="关键里程碑"><span
+class="header-section-number">1.10.3</span> 7.3 关键里程碑</h3>
+<table>
+<thead>
+<tr class="header">
+<th>里程碑</th>
+<th>内容</th>
+<th>预计完成时间</th>
+<th>验收标准</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>M1</td>
+<td>代码实现完成</td>
+<td>Day 3</td>
+<td>可通过WikiText-2测试</td>
+</tr>
+<tr class="even">
+<td>M2</td>
+<td>核心对比完成</td>
+<td>Day 8</td>
+<td>获得Vanilla vs Ortho vs Gaussian结果</td>
+</tr>
+<tr class="odd">
+<td>M3</td>
+<td>消融实验完成</td>
+<td>Day 14</td>
+<td>完成A1-A5实验</td>
+</tr>
+<tr class="even">
+<td>M4</td>
+<td>扩展实验完成</td>
+<td>Day 20</td>
+<td>完成Synthesizer对比和规模实验</td>
+</tr>
+<tr class="odd">
+<td>M5</td>
+<td>全部实验完成</td>
+<td>Day 25</td>
+<td>所有计划实验执行完毕</td>
+</tr>
+</tbody>
+</table>
+<h3 data-number="1.10.4" id="资源需求"><span
+class="header-section-number">1.10.4</span> 7.4 资源需求</h3>
+<table>
+<thead>
+<tr class="header">
+<th>实验类型</th>
+<th>GPU需求</th>
+<th>内存需求</th>
+<th>存储需求</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>小规模调试</td>
+<td>1×A100 40GB</td>
+<td>32GB</td>
+<td>100GB</td>
+</tr>
+<tr class="even">
+<td>标准对比实验</td>
+<td>4×A100 40GB</td>
+<td>128GB</td>
+<td>500GB</td>
+</tr>
+<tr class="odd">
+<td>大规模实验</td>
+<td>8×A100 80GB</td>
+<td>256GB</td>
+<td>1TB</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 data-number="1.11" id="参考文献与资源"><span
+class="header-section-number">1.11</span> 8. 参考文献与资源</h2>
+<h3 data-number="1.11.1" id="核心参考文献"><span
+class="header-section-number">1.11.1</span> 8.1 核心参考文献</h3>
+<ol type="1">
+<li><strong>Synthesizer</strong>: Tay et al. (2021). “Synthesizer:
+Rethinking Self-Attention in Transformer Models”</li>
+<li><strong>Reservoir Computing</strong>: Lukoševičius &amp; Jaeger
+(2009). “Reservoir Computing Approaches to Recurrent Neural Network
+Training”</li>
+<li><strong>Orthogonal CNNs</strong>: Wang et al. (2020). “Orthogonal
+Convolutional Neural Networks”</li>
+<li><strong>ELM</strong>: Huang et al. (2006). “Extreme Learning
+Machine: Theory and Applications”</li>
+<li><strong>Universal Approximation</strong>: Cybenko (1989), Hornik
+(1991)</li>
+<li><strong>Johnson-Lindenstrauss Lemma</strong>: Johnson &amp;
+Lindenstrauss (1984)</li>
+<li><strong>Transformer</strong>: Vaswani et al. (2017). “Attention Is
+All You Need”</li>
+<li><strong>GPT-2</strong>: Radford et al. (2019). “Language Models are
+Unsupervised Multitask Learners”</li>
+<li><strong>BERT</strong>: Devlin et al. (2019). “BERT: Pre-training of
+Deep Bidirectional Transformers”</li>
+<li><strong>Random Features</strong>: Rahimi &amp; Recht (2007). “Random
+Features for Large-Scale Kernel Machines”</li>
+</ol>
+<h3 data-number="1.11.2" id="数据集资源"><span
+class="header-section-number">1.11.2</span> 8.2 数据集资源</h3>
+<table>
+<thead>
+<tr class="header">
+<th>数据集</th>
+<th>HuggingFace</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>TinyStories</td>
+<td><code>roneneldan/TinyStories</code></td>
+<td>快速验证</td>
+</tr>
+<tr class="even">
+<td>OpenWebText</td>
+<td><code>openwebtext</code></td>
+<td>中等规模验证</td>
+</tr>
+<tr class="odd">
+<td>SlimPajama</td>
+<td><code>cerebras/SlimPajama-627B</code></td>
+<td>大规模验证</td>
+</tr>
+<tr class="even">
+<td>C4</td>
+<td><code>c4</code></td>
+<td>备选大规模数据集</td>
+</tr>
+</tbody>
+</table>
+<h3 data-number="1.11.3" id="开源代码参考"><span
+class="header-section-number">1.11.3</span> 8.3 开源代码参考</h3>
+<ul>
+<li><strong>nanoGPT</strong>: https://github.com/karpathy/nanoGPT</li>
+<li><strong>lit-gpt</strong>:
+https://github.com/Lightning-AI/lit-gpt</li>
+<li><strong>transformers</strong>:
+https://github.com/huggingface/transformers</li>
+</ul>
+<h3 data-number="1.11.4" id="设计文档索引"><span
+class="header-section-number">1.11.4</span> 8.4 设计文档索引</h3>
+<table>
+<thead>
+<tr class="header">
+<th>阶段</th>
+<th>文档</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>理论构建</td>
+<td>agent1_synthesizer_review.md</td>
+<td>Synthesizer理论综述</td>
+</tr>
+<tr class="even">
+<td>理论构建</td>
+<td>agent2_reservoir_review.md</td>
+<td>Reservoir Computing理论综述</td>
+</tr>
+<tr class="odd">
+<td>理论构建</td>
+<td>agent3_orthogonal_review.md</td>
+<td>正交神经网络理论综述</td>
+</tr>
+<tr class="even">
+<td>理论构建</td>
+<td>agent4_elm_review.md</td>
+<td>极限学习机理论综述</td>
+</tr>
+<tr class="odd">
+<td>理论构建</td>
+<td>agent5_fixed_attention_review.md</td>
+<td>固定注意力机制综述</td>
+</tr>
+<tr class="even">
+<td>理论构建</td>
+<td>agent6_gradient_flow.md</td>
+<td>梯度流分析</td>
+</tr>
+<tr class="odd">
+<td>理论构建</td>
+<td>agent7_isometry_proof.md</td>
+<td>等距性证明</td>
+</tr>
+<tr class="even">
+<td>理论构建</td>
+<td>agent8_comprehensive_review.md</td>
+<td>理论综合综述</td>
+</tr>
+<tr class="odd">
+<td>方法设计</td>
+<td>agent9_architecture_design.md</td>
+<td>架构设计</td>
+</tr>
+<tr class="even">
+<td>方法设计</td>
+<td>agent10_orthogonal_init.md</td>
+<td>正交初始化算法</td>
+</tr>
+<tr class="odd">
+<td>方法设计</td>
+<td>agent11_expressiveness.md</td>
+<td>表达能力分析</td>
+</tr>
+<tr class="even">
+<td>方法设计</td>
+<td>agent12_complexity.md</td>
+<td>复杂度分析</td>
+</tr>
+<tr class="odd">
+<td>方法设计</td>
+<td>agent13_method_review.md</td>
+<td>方法设计审查</td>
+</tr>
+<tr class="even">
+<td>实验设计</td>
+<td>agent14_datasets.md</td>
+<td>数据集选择</td>
+</tr>
+<tr class="odd">
+<td>实验设计</td>
+<td>agent15_baselines.md</td>
+<td>基线对比方案</td>
+</tr>
+<tr class="even">
+<td>实验设计</td>
+<td>agent16_metrics.md</td>
+<td>评估指标</td>
+</tr>
+<tr class="odd">
+<td>实验设计</td>
+<td>agent17_setup.md</td>
+<td>训练配置</td>
+</tr>
+<tr class="even">
+<td>实验设计</td>
+<td>agent18_exp_review.md</td>
+<td>实验设计审查</td>
+</tr>
+<tr class="odd">
+<td>代码实现</td>
+<td>code_review.md</td>
+<td>代码审查</td>
+</tr>
+<tr class="even">
+<td>代码实现</td>
+<td>README.md</td>
+<td>项目说明</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 data-number="1.12" id="附录a符号表"><span
+class="header-section-number">1.12</span> 附录A：符号表</h2>
+<table>
+<thead>
+<tr class="header">
+<th>符号</th>
+<th>含义</th>
+<th>典型值</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(d_{model}\)</span></td>
+<td>模型隐藏维度</td>
+<td>768</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(d_k\)</span></td>
+<td>注意力键/查询维度</td>
+<td>64</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(d_v\)</span></td>
+<td>注意力值维度</td>
+<td>64</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(d_{ff}\)</span></td>
+<td>FFN隐藏维度</td>
+<td>3072</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(h\)</span></td>
+<td>注意力头数</td>
+<td>12</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(L\)</span></td>
+<td>层数</td>
+<td>12</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(N\)</span></td>
+<td>序列长度</td>
+<td>可变</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(B\)</span></td>
+<td>批量大小</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="1.13" id="附录b术语表"><span
+class="header-section-number">1.13</span> 附录B：术语表</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>术语</th>
+<th>英文</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>正交随机注意力</td>
+<td>Orthogonal Random Attention (ORA)</td>
+<td>本研究提出的注意力机制</td>
+</tr>
+<tr class="even">
+<td>QR分解</td>
+<td>QR Decomposition</td>
+<td>矩阵分解方法，<span class="math inline">\(A = QR\)</span></td>
+</tr>
+<tr class="odd">
+<td>Haar测度</td>
+<td>Haar Measure</td>
+<td>正交群上的均匀分布</td>
+</tr>
+<tr class="even">
+<td>ELM</td>
+<td>Extreme Learning Machine</td>
+<td>极限学习机</td>
+</tr>
+<tr class="odd">
+<td>ESP</td>
+<td>Echo State Property</td>
+<td>回声状态性质</td>
+</tr>
+<tr class="even">
+<td>UAT</td>
+<td>Universal Approximation Theorem</td>
+<td>通用逼近定理</td>
+</tr>
+<tr class="odd">
+<td>JL引理</td>
+<td>Johnson-Lindenstrauss Lemma</td>
+<td>随机投影距离保持引理</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>文档版本: 1.0</em> <em>最后更新: 2025年</em> <em>研究项目:
+正交随机注意力Transformer</em></p>
+</body>
+</html>
+
+</body>
+</html>
