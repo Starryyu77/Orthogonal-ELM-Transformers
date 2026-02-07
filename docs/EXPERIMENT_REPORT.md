@@ -210,8 +210,7 @@ Properties of orthogonal matrices:
 
 1. **验证损失 (Validation Loss)**: 交叉熵损失
 2. **困惑度 (Perplexity, PPL)**: PPL = exp(Loss)
-3. **训练速度**: steps/小时
-4. **参数效率**: PPL / 参数量
+3. **参数效率**: PPL / 参数量
 
 ---
 
@@ -262,14 +261,13 @@ Properties of orthogonal matrices:
 ### 3.4 训练时间线 / Training Timeline
 
 ```
-Day 1 (2026-02-06 15:30):
+Day 1 (2026-02-06):
   ├─ 同时启动 Group A (GPT) 和 Group B (OELM-NoFreeze)
-  ├─ GPT训练时长: ~7.5小时 (完成于22:52)
-  └─ OELM训练时长: ~6小时 (完成于21:30)
+  ├─ GPT完成于 22:52
+  └─ OELM完成于 21:30
 
-Day 2:
-  └─ 启动 Group C (OELM-Freeze)
-     └─ 完成于 2026-02-07 15:25 (约22.5小时训练)
+Day 2 (2026-02-07):
+  └─ Group C (OELM-Freeze) 完成于 15:25
 ```
 
 ---
@@ -294,7 +292,6 @@ Day 2:
 | **总参数量 / Total Params** | 44.9M | **41.8M** | 41.8M | OELM -6.9% |
 | **可训练参数 / Trainable** | 44.9M | 41.8M | **~38M** | Freeze -15.4% |
 | **模型大小 / Model Size** | 514 MB | **490 MB** | 490 MB | OELM -4.7% |
-| **训练时长 / Training Time** | ~7.5h | **~6h** | ~22.5h | OELM最快 |
 
 ### 4.3 训练曲线分析 / Training Curve Analysis
 
@@ -381,9 +378,7 @@ Training complete! Final checkpoint saved.
 
 3. **冻结策略效果**: OELM-Freeze可减少15.4%可训练参数，但PPL增加19.3%，性能损失较大
 
-4. **训练速度**: OELM训练速度比GPT快约29%，节省约1.5小时
-
-5. **收敛稳定性**: 所有模型均稳定完成训练，证明OELM架构的可靠性
+4. **收敛稳定性**: 所有模型均稳定完成训练，证明OELM架构的可靠性
 
 #### English
 1. **GPT Best Performance**: Standard GPT baseline achieved the best validation PPL (4.14) among all comparisons
@@ -392,9 +387,7 @@ Training complete! Final checkpoint saved.
 
 3. **Freezing Strategy Effect**: OELM-Freeze reduces trainable parameters by 15.4% but increases PPL by 19.3%, indicating significant performance loss
 
-4. **Training Speed**: OELM trains ~29% faster than GPT, saving approximately 1.5 hours
-
-5. **Convergence Stability**: All models completed training stably, demonstrating the reliability of the OELM architecture
+4. **Convergence Stability**: All models completed training stably, demonstrating the reliability of the OELM architecture
 
 ### 5.2 结果解释 / Result Interpretation
 
@@ -468,7 +461,7 @@ Completely freezing Q/K matrices limits the dynamic adjustment capability of att
 
 3. **冻结策略需谨慎**: 完全冻结Q/K可减少15.4%可训练参数，但性能损失达19.6%，需要更精细的策略
 
-4. **训练效率**: OELM训练速度快29%，在资源受限场景下是可行的替代方案
+4. **参数效率**: OELM参数量少6.9%，在资源受限场景下是可行的替代方案
 
 #### English
 1. **Orthogonal Initialization Effective**: OELM-NoFreeze shows only 12.6% performance gap from GPT, proving orthogonal random initialization is effective
@@ -477,14 +470,14 @@ Completely freezing Q/K matrices limits the dynamic adjustment capability of att
 
 3. **Freezing Strategy Needs Care**: Complete Q/K freezing reduces trainable parameters by 15.4% but causes 19.6% performance loss, requiring more refined strategies
 
-4. **Training Efficiency**: OELM trains 29% faster, making it a viable alternative in resource-constrained scenarios
+4. **Parameter Efficiency**: OELM uses fewer parameters while maintaining reasonable performance
 
 ### 6.2 实践建议 / Practical Recommendations
 
 | 场景 / Scenario | 推荐方案 / Recommendation | 理由 / Reason |
 |----------------|--------------------------|--------------|
 | 追求最佳性能 / Best Performance | GPT-Base | Val PPL最低 / Lowest Val PPL |
-| 快速训练/资源受限 / Fast Training | OELM-NoFreeze | 速度快29%，参数量少 / 29% faster, fewer params |
+| 参数效率优先 / Parameter Efficiency | OELM-NoFreeze | 参数量少6.9%，性能合理 / 6.9% fewer params, reasonable performance |
 | 极致参数效率 / Max Param Efficiency | OELM-Freeze | 可训练参数最少 / Fewest trainable params |
 | 边缘设备部署 / Edge Deployment | OELM-Freeze | 推理时内存友好 / Memory-friendly inference |
 
