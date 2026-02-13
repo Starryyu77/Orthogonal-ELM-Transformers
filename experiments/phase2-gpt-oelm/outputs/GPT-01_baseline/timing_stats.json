@@ -1,0 +1,22 @@
+{
+  "model_type": "baseline",
+  "init_method": "n/a",
+  "dataset": "tinystories",
+  "total_wall_time": 16287.723808765411,
+  "total_formatted": "4h 31m 27s",
+  "num_steps_measured": 99899,
+  "warmup_steps": 100,
+  "mean_step_time": 0.08365935839171616,
+  "std_step_time": 0.03031544099969921,
+  "median_step_time": 0.062232207506895065,
+  "min_step_time": 0.055739808827638626,
+  "max_step_time": 0.18694143369793892,
+  "p95_step_time": 0.14791198559105392,
+  "p99_step_time": 0.17418096020817758,
+  "total_validation_time": 7268.833119016141,
+  "mean_validation_time": 73.42255675773879,
+  "num_validations": 99,
+  "epoch_times": [],
+  "final_perplexity": 4.269209111455862,
+  "best_val_loss": 1.4514285902856638
+}

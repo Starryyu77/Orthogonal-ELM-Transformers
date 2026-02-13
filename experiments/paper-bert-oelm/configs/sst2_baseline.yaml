@@ -1,0 +1,42 @@
+# SST-2 Baseline Configuration
+# 全参数微调基线配置
+
+experiment:
+  name: "sst2_baseline"
+  task: "sentiment_classification"
+  dataset: "sst2"
+  num_classes: 2
+
+model:
+  name: "bert-base-uncased"
+  hidden_size: 768
+  num_layers: 12
+  num_heads: 12
+  intermediate_size: 3072
+
+training:
+  freeze_mode: false
+  init_method: "normal"  # 标准初始化
+  learning_rate: 2.0e-5
+  batch_size: 32
+  epochs: 3
+  max_steps: -1
+  warmup_ratio: 0.1
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  validate_steps: 500
+  max_length: 128
+
+data:
+  train_samples: 67349
+  val_samples: 872
+  test_samples: 1821
+
+results:
+  best_accuracy: 93.12%
+  best_f1: 0.9389
+  training_time: "~30min"
+  parameters:
+    total: 109.48M
+    trainable: 109.48M
+    frozen: 0

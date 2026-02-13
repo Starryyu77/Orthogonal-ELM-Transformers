@@ -1,0 +1,47 @@
+# MNLI OELM-Freeze Configuration
+# 自然语言推理 + 分头正交初始化
+
+experiment:
+  name: "mnli_oelm_freeze"
+  task: "natural_language_inference"
+  dataset: "mnli"
+  num_classes: 3
+
+model:
+  name: "bert-base-uncased"
+  hidden_size: 768
+  num_layers: 12
+  num_heads: 12
+  intermediate_size: 3072
+
+training:
+  freeze_mode: true
+  init_method: "orthogonal"
+  learning_rate: 1.0e-4
+  batch_size: 32
+  epochs: 3
+  max_steps: -1
+  warmup_ratio: 0.1
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  validate_steps: 500
+  max_length: 128
+
+data:
+  train_samples: 392702
+  val_matched: 9815
+  val_mismatched: 9832
+
+results:
+  best_accuracy: 82.23%
+  best_f1: 0.8758
+  validation_runs: 73
+  training_time: "~4 hours"
+  parameters:
+    total: 109.48M
+    trainable: 95.31M  # 87.1%
+    frozen: 14.17M      # 12.9%
+  efficiency:
+    parameter_reduction: 12.9%
+    performance_vs_baseline: 98.5%
+    gap_vs_sst2: -0.63%  # 比SST-2差距更小

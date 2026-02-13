@@ -1,0 +1,29 @@
+{
+  "model_type": "oelm_v2",
+  "init_method": "orthogonal",
+  "dataset": "openwebtext",
+  "total_wall_time": 32926.92274188995,
+  "total_formatted": "9h 8m 46s",
+  "num_steps_measured": 149899,
+  "warmup_steps": 100,
+  "mean_step_time": 0.18409749873243497,
+  "std_step_time": 0.0529620392955594,
+  "median_step_time": 0.16950267925858498,
+  "min_step_time": 0.05915950611233711,
+  "max_step_time": 0.3834020644426346,
+  "p95_step_time": 0.2815624505281448,
+  "p99_step_time": 0.3244827066361903,
+  "total_validation_time": 4707.455255400389,
+  "mean_validation_time": 31.59365943221738,
+  "num_validations": 149,
+  "epoch_times": [
+    6650.025985240936,
+    6357.542845487595,
+    5566.406913518906,
+    5451.834794044495,
+    3930.884295940399,
+    4180.777552604675
+  ],
+  "final_perplexity": 54.294436352116264,
+  "best_val_loss": 3.9944217604033803
+}

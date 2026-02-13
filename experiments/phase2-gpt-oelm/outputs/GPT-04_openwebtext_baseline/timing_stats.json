@@ -1,0 +1,29 @@
+{
+  "model_type": "baseline",
+  "init_method": "n/a",
+  "dataset": "openwebtext",
+  "total_wall_time": 33018.78170609474,
+  "total_formatted": "9h 10m 18s",
+  "num_steps_measured": 149899,
+  "warmup_steps": 100,
+  "mean_step_time": 0.18365930932942276,
+  "std_step_time": 0.05619857139369869,
+  "median_step_time": 0.16731970757246017,
+  "min_step_time": 0.05735365301370621,
+  "max_step_time": 0.36838939413428307,
+  "p95_step_time": 0.28403998650610446,
+  "p99_step_time": 0.32753982722759234,
+  "total_validation_time": 4848.678633227944,
+  "mean_validation_time": 32.5414673371003,
+  "num_validations": 149,
+  "epoch_times": [
+    6709.98214507103,
+    6409.809589147568,
+    5617.392424106598,
+    5429.674558877945,
+    3928.701388835907,
+    4217.088876485825
+  ],
+  "final_perplexity": 47.24455377660676,
+  "best_val_loss": 3.8553373833091893
+}
