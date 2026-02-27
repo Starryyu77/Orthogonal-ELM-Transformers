@@ -1,0 +1,45 @@
+# SST-2 OELM-Freeze Configuration
+# 分头正交初始化 + 冻结 Q/K
+
+experiment:
+  name: "sst2_oelm_freeze"
+  task: "sentiment_classification"
+  dataset: "sst2"
+  num_classes: 2
+
+model:
+  name: "bert-base-uncased"
+  hidden_size: 768
+  num_layers: 12
+  num_heads: 12
+  intermediate_size: 3072
+
+training:
+  freeze_mode: true
+  init_method: "orthogonal"  # 分头正交初始化
+  learning_rate: 1.0e-4  # 更大学习率
+  batch_size: 32
+  epochs: 3
+  max_steps: -1
+  warmup_ratio: 0.1
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  validate_steps: 500
+  max_length: 128
+
+data:
+  train_samples: 67349
+  val_samples: 872
+  test_samples: 1821
+
+results:
+  best_accuracy: 91.28%
+  best_f1: 0.9159
+  training_time: "~35min"
+  parameters:
+    total: 109.48M
+    trainable: 95.31M  # 87.1%
+    frozen: 14.17M      # 12.9% (Q/K)
+  efficiency:
+    parameter_reduction: 12.9%
+    performance_vs_baseline: 98.0%

@@ -1,0 +1,99 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# PyTorch
+*.pth
+*.pt
+*.ckpt
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Experiment outputs (large files)
+outputs/
+outputs_phase*/
+*.log
+checkpoints/
+pretrained/
+
+# Model files (too large for GitHub)
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.h5
+*.pkl
+*.pickle
+
+# Archive files
+*.tar.gz
+*.zip
+*.tar
+*.rar
+
+# Backup files
+*.backup
+*backup*
+
+# Large data files
+*.csv
+*.jsonl
+*.parquet
+*.arrow
+
+# Data
+data/
+datasets/
+
+# Temporary files
+tmp/
+temp/
+.cache/
+
+# Weights & Biases
+wandb/
+
+# Tensorboard
+runs/
+events.out.*
+
+# Models (too large)
+*.bin
+*.safetensors

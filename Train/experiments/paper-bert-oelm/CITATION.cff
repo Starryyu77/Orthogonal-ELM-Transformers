@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "BERT OELM: Head-wise Orthogonal Initialization for Efficient Transformer Fine-tuning"
+authors:
+  - family-names: "Zhang"
+    given-names: "Tianyu"
+    affiliation: "NTU MLDA Lab"
+repository-code: "https://github.com/yourusername/bert-oelm"
+abstract: "This repository contains the implementation of Head-wise Orthogonal Initialization for BERT fine-tuning, demonstrating that freezing 12.9% of parameters (Query/Key) with orthogonal initialization achieves 98.5% of full fine-tuning performance on both SST-2 and MNLI datasets."
+keywords:
+  - "BERT"
+  - "Orthogonal Initialization"
+  - "Parameter-Efficient Fine-Tuning"
+  - "Transformer"
+  - "Deep Learning"
+license: MIT

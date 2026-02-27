@@ -1,0 +1,20 @@
+{
+  "experiment_name": "Q/K Freeze Mechanism Comparison",
+  "started_at": "2026-02-07T01:29:17.664930",
+  "completed_at": "2026-02-07T01:29:17.665585",
+  "mode": "sequential",
+  "results": {
+    "gpt_base": {
+      "status": "dry_run",
+      "exp_id": "gpt_base"
+    },
+    "oelm_no_freeze": {
+      "status": "dry_run",
+      "exp_id": "oelm_no_freeze"
+    },
+    "oelm_freeze": {
+      "status": "dry_run",
+      "exp_id": "oelm_freeze"
+    }
+  }
+}

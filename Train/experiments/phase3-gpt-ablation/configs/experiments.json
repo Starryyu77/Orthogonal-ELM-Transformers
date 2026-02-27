@@ -1,0 +1,110 @@
+{
+  "phase": "Phase 3: GPT OELM Ablation",
+  "description": "在多个数据集上验证OELM方法的有效性",
+  "success_criteria": "OELM-Freeze PPL ≤ Baseline PPL × 1.05",
+  "experiments": [
+    {
+      "id": "GPT-01",
+      "name": "TinyStories Baseline",
+      "dataset": "tinystories",
+      "model_type": "baseline",
+      "lr": "3e-4",
+      "max_steps": 100000,
+      "gpu": 2,
+      "status": "completed",
+      "result": {
+        "final_ppl": 4.27,
+        "training_time": "4h 31m"
+      }
+    },
+    {
+      "id": "GPT-02",
+      "name": "TinyStories OELM-Freeze",
+      "dataset": "tinystories",
+      "model_type": "oelm_v2",
+      "lr": "1e-3",
+      "max_steps": 100000,
+      "gpu": 3,
+      "status": "completed",
+      "result": {
+        "final_ppl": 4.69,
+        "training_time": "4h 32m",
+        "vs_baseline": "+9.8%"
+      }
+    },
+    {
+      "id": "GPT-03",
+      "name": "TinyStories OELM-Random",
+      "dataset": "tinystories",
+      "model_type": "oelm_random",
+      "lr": "1e-3",
+      "max_steps": 100000,
+      "gpu": 2,
+      "status": "completed",
+      "result": {
+        "final_ppl": 4.97,
+        "training_time": "4h 15m",
+        "vs_baseline": "+16.4%",
+        "vs_oelm_freeze": "+6.0%"
+      }
+    },
+    {
+      "id": "GPT-04",
+      "name": "OpenWebText Baseline",
+      "dataset": "openwebtext",
+      "model_type": "baseline",
+      "lr": "3e-4",
+      "max_steps": 150000,
+      "gpu": 2,
+      "status": "completed",
+      "result": {
+        "final_ppl": 47.24,
+        "training_time": "9h 10m"
+      }
+    },
+    {
+      "id": "GPT-05",
+      "name": "OpenWebText OELM-Freeze",
+      "dataset": "openwebtext",
+      "model_type": "oelm_v2",
+      "lr": "1e-3",
+      "max_steps": 150000,
+      "gpu": 3,
+      "status": "completed",
+      "result": {
+        "final_ppl": 54.29,
+        "training_time": "9h 8m",
+        "vs_baseline": "+14.9%"
+      }
+    },
+    {
+      "id": "GPT-06",
+      "name": "WikiText-103 Baseline",
+      "dataset": "wikitext103",
+      "model_type": "baseline",
+      "lr": "3e-4",
+      "max_steps": 200000,
+      "gpu": 2,
+      "status": "pending"
+    },
+    {
+      "id": "GPT-07",
+      "name": "WikiText-103 OELM-Freeze",
+      "dataset": "wikitext103",
+      "model_type": "oelm_v2",
+      "lr": "1e-3",
+      "max_steps": 200000,
+      "gpu": 3,
+      "status": "pending"
+    }
+  ],
+  "findings": {
+    "orthogonal_init_effective": true,
+    "oelm_vs_random_improvement": "6.0%",
+    "freeze_qk_penalty": {
+      "tinystories": "+9.8%",
+      "openwebtext": "+14.9%"
+    },
+    "target_met": false
+  }
+}

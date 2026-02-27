@@ -1,0 +1,114 @@
+BERT Reservoir Test - Fair Comparison Experiment
+Batch Timestamp: 20260207_212016
+Number of Runs: 3
+
+Checking GPU status...
+
+Clearing caches...
+✓ Caches cleared
+
+============================================================
+ITERATION 1/3 - AB-AB Interleaved Pattern
+============================================================
+
+========================================
+Run 1/3: Baseline
+Start time: Sat 07 Feb 2026 09:20:17 PM +08
+Log file: logs/baseline_run1_20260207_212017.log
+========================================
+✓ Timing stats saved
+✓ Run 1 completed: Baseline
+End time: Sat 07 Feb 2026 09:50:49 PM +08
+
+Clearing caches...
+✓ Caches cleared
+
+Waiting 10 seconds for GPU to stabilize...
+========================================
+Run 1/3: OELM-Freeze
+Start time: Sat 07 Feb 2026 09:51:00 PM +08
+Log file: logs/oelm_run1_20260207_215100.log
+========================================
+✓ Timing stats saved
+✓ Run 1 completed: OELM-Freeze
+End time: Sat 07 Feb 2026 10:26:57 PM +08
+
+Clearing caches...
+✓ Caches cleared
+
+Waiting 10 seconds for GPU to stabilize...
+============================================================
+ITERATION 2/3 - AB-AB Interleaved Pattern
+============================================================
+
+========================================
+Run 2/3: Baseline
+Start time: Sat 07 Feb 2026 10:27:08 PM +08
+Log file: logs/baseline_run2_20260207_222708.log
+========================================
+✓ Timing stats saved
+✓ Run 2 completed: Baseline
+End time: Sat 07 Feb 2026 11:04:01 PM +08
+
+Clearing caches...
+✓ Caches cleared
+
+Waiting 10 seconds for GPU to stabilize...
+========================================
+Run 2/3: OELM-Freeze
+Start time: Sat 07 Feb 2026 11:04:12 PM +08
+Log file: logs/oelm_run2_20260207_230412.log
+========================================
+✓ Timing stats saved
+✓ Run 2 completed: OELM-Freeze
+End time: Sat 07 Feb 2026 11:39:21 PM +08
+
+Clearing caches...
+✓ Caches cleared
+
+Waiting 10 seconds for GPU to stabilize...
+============================================================
+ITERATION 3/3 - AB-AB Interleaved Pattern
+============================================================
+
+========================================
+Run 3/3: Baseline
+Start time: Sat 07 Feb 2026 11:39:32 PM +08
+Log file: logs/baseline_run3_20260207_233932.log
+========================================
+✓ Timing stats saved
+✓ Run 3 completed: Baseline
+End time: Sun 08 Feb 2026 12:18:04 AM +08
+
+Clearing caches...
+✓ Caches cleared
+
+Waiting 10 seconds for GPU to stabilize...
+========================================
+Run 3/3: OELM-Freeze
+Start time: Sun 08 Feb 2026 12:18:15 AM +08
+Log file: logs/oelm_run3_20260208_001815.log
+========================================
+✓ Timing stats saved
+✓ Run 3 completed: OELM-Freeze
+End time: Sun 08 Feb 2026 12:54:29 AM +08
+
+Clearing caches...
+✓ Caches cleared
+
+Waiting 10 seconds for GPU to stabilize...
+============================================================
+AB-AB Interleaved Pattern Complete
+Each iteration: Baseline → OELM-Freeze
+This controls for cluster state drift over time
+============================================================
+
+============================================================
+Analyzing Results
+============================================================
+============================================================
+============================================================
+All experiments completed!
+Summary file: logs/comparison_summary_20260207_212016.txt
+Timing results: timing_results/
+============================================================
