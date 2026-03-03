@@ -11,7 +11,7 @@ echo "开始时间: $(date)"
 echo "=========================================="
 
 # 项目目录
-PROJECT_DIR="$HOME/Orthogonal_ELM_Transformers/Train"
+PROJECT_DIR="/projects/Orthogonal_ELM_Transformers/Train"
 cd $PROJECT_DIR
 
 # 激活环境

@@ -62,6 +62,19 @@ spec_oelm.loader.exec_module(module_oelm)
 OELMForSequenceClassification = module_oelm.OELMForSequenceClassification
 create_oelm_classifier = module_oelm.create_oelm_classifier
 
+# 加载 OELM-FFN classification 模型
+spec_oelm_ffn = importlib.util.spec_from_file_location(
+    "modeling_oelm_ffn", MODELS_DIR / "modeling_oelm_ffn.py"
+)
+module_oelm_ffn = importlib.util.module_from_spec(spec_oelm_ffn)
+sys.modules["modeling_oelm_ffn"] = module_oelm_ffn
+spec_oelm_ffn.loader.exec_module(module_oelm_ffn)
+create_oelm_ffn_classifier = module_oelm_ffn.create_oelm_ffn_classifier
+create_baseline_classifier = module_oelm_ffn.create_baseline_classifier
+create_oelm_qk_classifier = module_oelm_ffn.create_oelm_qk_classifier
+create_oelm_qk_ffn_classifier = module_oelm_ffn.create_oelm_qk_ffn_classifier
+create_oelm_ffn_only_classifier = module_oelm_ffn.create_oelm_ffn_only_classifier
+
 
 # 配置日志
 logging.basicConfig(
@@ -347,8 +360,11 @@ def main():
 
     # 模型配置
     parser.add_argument('--model_type', type=str, required=True,
-                        choices=['baseline', 'oelm_freeze', 'oelm_random'],
-                        help='模型类型')
+                        choices=['baseline', 'oelm_freeze', 'oelm_random',
+                                 'oelm_qk_ffn', 'oelm_ffn_only',
+                                 'oelm_qk_ffn_random', 'oelm_ffn_only_random'],
+                        help='模型类型: baseline, oelm_freeze(原始OELM-QK), '
+                             'oelm_qk_ffn(QK+FFN都冻结), oelm_ffn_only(只冻结FFN)')
     parser.add_argument('--num_classes', type=int, default=2,
                         help='分类类别数')
     parser.add_argument('--vocab_size', type=int, default=50257,
@@ -456,8 +472,7 @@ def main():
             max_seq_len=args.max_seq_len,
             dropout=args.dropout
         )
-    else:  # oelm_freeze or oelm_random
-        init_method = 'orthogonal' if args.model_type == 'oelm_freeze' else 'normal'
+    elif args.model_type == 'oelm_freeze':
         model = create_oelm_classifier(
             num_classes=args.num_classes,
             vocab_size=args.vocab_size,
@@ -468,8 +483,75 @@ def main():
             max_seq_len=args.max_seq_len,
             dropout=args.dropout,
             freeze_qk=True,
-            init_method=init_method
+            init_method='orthogonal'
         )
+    elif args.model_type == 'oelm_random':
+        model = create_oelm_classifier(
+            num_classes=args.num_classes,
+            vocab_size=args.vocab_size,
+            d_model=args.d_model,
+            num_layers=args.num_layers,
+            num_heads=args.num_heads,
+            d_ff=args.d_ff,
+            max_seq_len=args.max_seq_len,
+            dropout=args.dropout,
+            freeze_qk=True,
+            init_method='normal'
+        )
+    elif args.model_type == 'oelm_qk_ffn':
+        # Q/K和FFN都冻结（正交初始化）
+        model = create_oelm_qk_ffn_classifier(
+            num_classes=args.num_classes,
+            vocab_size=args.vocab_size,
+            d_model=args.d_model,
+            num_layers=args.num_layers,
+            num_heads=args.num_heads,
+            d_ff=args.d_ff,
+            max_seq_len=args.max_seq_len,
+            dropout=args.dropout,
+            init_method='orthogonal'
+        )
+    elif args.model_type == 'oelm_qk_ffn_random':
+        # Q/K和FFN都冻结（随机初始化）
+        model = create_oelm_qk_ffn_classifier(
+            num_classes=args.num_classes,
+            vocab_size=args.vocab_size,
+            d_model=args.d_model,
+            num_layers=args.num_layers,
+            num_heads=args.num_heads,
+            d_ff=args.d_ff,
+            max_seq_len=args.max_seq_len,
+            dropout=args.dropout,
+            init_method='normal'
+        )
+    elif args.model_type == 'oelm_ffn_only':
+        # 只冻结FFN（正交初始化）
+        model = create_oelm_ffn_only_classifier(
+            num_classes=args.num_classes,
+            vocab_size=args.vocab_size,
+            d_model=args.d_model,
+            num_layers=args.num_layers,
+            num_heads=args.num_heads,
+            d_ff=args.d_ff,
+            max_seq_len=args.max_seq_len,
+            dropout=args.dropout,
+            init_method='orthogonal'
+        )
+    elif args.model_type == 'oelm_ffn_only_random':
+        # 只冻结FFN（随机初始化）
+        model = create_oelm_ffn_only_classifier(
+            num_classes=args.num_classes,
+            vocab_size=args.vocab_size,
+            d_model=args.d_model,
+            num_layers=args.num_layers,
+            num_heads=args.num_heads,
+            d_ff=args.d_ff,
+            max_seq_len=args.max_seq_len,
+            dropout=args.dropout,
+            init_method='normal'
+        )
+    else:
+        raise ValueError(f"不支持的模型类型: {args.model_type}")
 
     model = model.to(device)
 

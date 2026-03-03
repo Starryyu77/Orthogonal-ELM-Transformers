@@ -1,0 +1,33 @@
+{
+  "model_type": "oelm_ffn_only",
+  "dataset": "imdb",
+  "best_accuracy": 51.004000000000005,
+  "final_val_accuracy": 50.71600000000001,
+  "final_val_loss": 0.69394438722846,
+  "total_time_seconds": 1285.2115399241447,
+  "total_time_formatted": "0h 21m 25s",
+  "avg_epoch_time": 277.75935771564644,
+  "avg_step_time": 0.17679641616273903,
+  "config": {
+    "model_type": "oelm_ffn_only",
+    "num_classes": 2,
+    "vocab_size": 50257,
+    "d_model": 512,
+    "num_layers": 6,
+    "num_heads": 8,
+    "d_ff": 2048,
+    "max_seq_len": 512,
+    "dropout": 0.1,
+    "dataset": "imdb",
+    "batch_size": 16,
+    "num_epochs": 3,
+    "learning_rate": 0.001,
+    "warmup_steps": 500,
+    "weight_decay": 0.01,
+    "output_dir": "/usr1/home/s125mdg43_10/Orthogonal_ELM_Transformers/Train/outputs_phase4/IMDB_oelm_ffn_only_lr1e-3",
+    "seed": 42,
+    "device": "cuda:3",
+    "log_interval": 100,
+    "eval_interval": 1000
+  }
+}
