@@ -1,0 +1,33 @@
+{
+  "model_type": "oelm_qk_ffn",
+  "dataset": "mnli",
+  "best_accuracy": 56.90269994905756,
+  "final_val_accuracy": 56.87213448802852,
+  "final_val_loss": 0.9090805327950549,
+  "total_time_seconds": 12739.200741503388,
+  "total_time_formatted": "3h 32m 19s",
+  "avg_epoch_time": 4187.690331704915,
+  "avg_step_time": 0.1697964792137602,
+  "config": {
+    "model_type": "oelm_qk_ffn",
+    "num_classes": 3,
+    "vocab_size": 50257,
+    "d_model": 512,
+    "num_layers": 6,
+    "num_heads": 8,
+    "d_ff": 2048,
+    "max_seq_len": 512,
+    "dropout": 0.1,
+    "dataset": "mnli",
+    "batch_size": 16,
+    "num_epochs": 3,
+    "learning_rate": 0.001,
+    "warmup_steps": 500,
+    "weight_decay": 0.01,
+    "output_dir": "/usr1/home/s125mdg43_10/Orthogonal_ELM_Transformers/Train/outputs_phase4/MNLI_oelm_qk_ffn_lr1e-3",
+    "seed": 42,
+    "device": "cuda:3",
+    "log_interval": 100,
+    "eval_interval": 1000
+  }
+}
