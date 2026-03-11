@@ -219,6 +219,7 @@ Improvement: +11.60% accuracy, -14% loss, -4.3% time
 See detailed reports:
 - [Phase 4 Main Report](Train/experiments/phase4-gpt-classification/REPORT.md)
 - [MNLI Detailed Report](Train/experiments/phase4-gpt-classification/REPORT_MNLI.md)
+- [OELM-QK-FFN Extension Results](EXPERIMENT_RESULTS_OELM_FFN.md)
 
 ---
 
@@ -317,6 +318,7 @@ For questions or issues:
 
 - [x] BERT + XNLI implementation
 - [x] GPT + Classification (IMDB, AG News, XNLI, MNLI)
+- [x] OELM-QK-FFN extension (~65% trainable params)
 - [ ] Large model validation (GPT-Large, BERT-Large)
 - [ ] Long sequence support (1024, 2048)
 - [ ] Additional tasks (NER, QA)
@@ -324,6 +326,6 @@ For questions or issues:
 
 ---
 
-**Last Updated**: 2026-02-28
+**Last Updated**: 2026-03-08
 **Version**: 1.0.0
 **Status**: Active Development
