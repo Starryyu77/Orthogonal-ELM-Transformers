@@ -8,6 +8,8 @@ This is a research codebase for **Orthogonal ELM (Extreme Learning Machine) Tran
 
 **Key Finding**: OELM is effective for classification tasks (BERT/GPT both work) but NOT for generation tasks. Effectiveness depends on task type, not architecture type.
 
+**Recent Update**: OELM-QK-FFN (冻结Q/K+FFN，~65%可训练参数) 在多个数据集上达到与原始OELM相当或更好的性能。
+
 ## Common Commands
 
 ### Environment Setup
@@ -56,6 +58,34 @@ python bert_imdb_experiments.py
 python bert_agnews_experiments.py
 python bert_mnli_experiments.py
 python bert_xnli_experiments.py --language en
+```
+
+**OELM-QK-FFN 扩展实验** (冻结Q/K+FFN，~65%可训练参数):
+```bash
+cd Train/experiments/phase4-gpt-classification/scripts
+
+# IMDB
+./run_imdb_oelm_qk_ffn.sh 0
+
+# AG News
+./run_agnews_oelm_qk_ffn.sh 0
+
+# XNLI
+./run_xnli_oelm_qk_ffn.sh 0
+
+# MNLI
+./run_mnli_oelm_qk_ffn.sh 0
+```
+
+**数据准备** (用于GPT生成实验):
+```bash
+cd Train/tools/data_preparation
+
+# 下载并处理TinyStories
+python download_tinystories.py --output_dir ../../data/tinystories
+
+# 下载并处理OpenWebText样本
+python download_openwebtext.py --output_dir ../../data/openwebtext --max_samples 100000
 ```
 
 ### Distributed Training (Dual GPU)
@@ -111,11 +141,12 @@ Head-wise QR (CORRECT): [12, 64, 768] -> QR per head -> preserves head diversity
 
 ### Model Variants
 
-| Variant | Location | Use Case |
-|---------|----------|----------|
-| BERT OELM | `paper-bert-oelm/src/modeling_bert_oelm.py` | BERT fine-tuning with frozen Q/K |
-| GPT OELM | `phase4-gpt-classification/models/modeling_oelm_classification.py` | GPT for classification |
-| GPT Baseline | `phase4-gpt-classification/models/modeling_gpt_classification.py` | Standard GPT classifier |
+| Variant | Location | Use Case | Trainable Params |
+|---------|----------|----------|------------------|
+| BERT OELM | `paper-bert-oelm/src/modeling_bert_oelm.py` | BERT fine-tuning with frozen Q/K | ~75% |
+| GPT OELM | `phase4-gpt-classification/models/modeling_oelm_classification.py` | GPT for classification | ~75% |
+| GPT Baseline | `phase4-gpt-classification/models/modeling_gpt_classification.py` | Standard GPT classifier | 100% |
+| **GPT OELM-QK-FFN** | `phase4-gpt-classification/models/modeling_oelm_classification.py` | **冻结Q/K+FFN** | **~65%** |
 
 ### Experiment Organization
 
@@ -126,18 +157,32 @@ Train/experiments/
 ├── phase2-gpt-oelm/        # GPT generation experiments (OELM NOT effective)
 ├── phase3-gpt-ablation/    # Ablation studies on generation
 ├── phase4-gpt-classification/  # GPT classification (OELM effective!)
+│   ├── models/             # OELM classification models
+│   ├── scripts/            # Experiment scripts (baseline, oelm, oelm_qk_ffn)
+│   └── data/               # Prepared datasets
 └── common/                 # Shared utilities
 ```
 
 ### Critical Hyperparameters
 
-**OELM-Freeze requires higher learning rate**:
-- Baseline: `lr=2e-5`
-- OELM-Freeze: `lr=1e-3` to `1e-4` (3-10× higher)
+**Learning Rate by Configuration**:
+
+| Configuration | Learning Rate | Trainable Params |
+|--------------|---------------|------------------|
+| Baseline | 2e-5 | 100% |
+| OELM-Freeze (Q/K) | 1e-3 to 1e-4 | ~75% |
+| **OELM-QK-FFN** | **1e-3 (推荐)** | **~65%** |
+
+**Dataset-Specific Best LR for OELM-QK-FFN**:
+- IMDB: 3e-3
+- AG News: 1e-3
+- XNLI: 1e-3
+- MNLI: 1e-3
 
 **Parameter Freezing Rule**:
-- MUST freeze: Query, Key projections
-- MUST NOT freeze: Pooler, Classifier, Value, FFN, LayerNorm
+- MUST freeze: Query, Key projections (OELM基础)
+- OPTIONAL freeze: FFN Up/Down matrices (OELM-QK-FFN扩展)
+- MUST NOT freeze: Pooler, Classifier, Value, LayerNorm
 
 ## Key File Locations
 
@@ -149,6 +194,9 @@ Train/experiments/
 | GPT Training | `Train/experiments/phase4-gpt-classification/scripts/train_classification.py` |
 | Legacy BERT | `bert_experiments/bert_*_experiments.py` |
 | Cluster Utils | `Train/tools/cluster_setup/` |
+| Data Preparation | `Train/tools/data_preparation/` |
+| Local Setup Guide | `LOCAL_SETUP_GUIDE.md` |
+| OELM-FFN Results | `EXPERIMENT_RESULTS_OELM_FFN.md` |
 
 ## Data Flow
 
