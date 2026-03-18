@@ -1,331 +1,217 @@
 # Orthogonal ELM Transformers (OELM)
 
+> **Efficient Training of Transformers via Orthogonal Initialization and Parameter Freezing**
+
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch 2.0+](https://img.shields.io/badge/pytorch-2.0+-red.svg)](https://pytorch.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-> **Efficient Training of Transformers via Orthogonal Initialization and Q/K Freezing**
+---
 
-## 📋 Overview
+## 🔬 核心原理
 
-This repository contains the implementation and experiments for **Orthogonal ELM (Extreme Learning Machine) Transformers**, a novel approach that combines:
-- **Head-wise Orthogonal Initialization** for Query/Key projections
-- **Q/K Parameter Freezing** during training
-- **Bidirectional Attention** for classification tasks
+OELM (Orthogonal Extreme Learning Machine) 是一种高效的 Transformer 训练方法，通过以下技术减少可训练参数并提升性能：
 
-Our experiments demonstrate that OELM consistently improves classification performance across various datasets while reducing training time.
+### 1. 分头正交初始化 (Head-wise Orthogonal Initialization)
+- 对每个注意力头的 Q/K 投影矩阵独立进行 QR 分解
+- 保持注意力头的多样性和几何结构
+- 避免全局正交初始化破坏头间独立性
 
-### 🎯 Key Results
+### 2. 参数冻结策略
+- **OELM-QK**: 冻结 Query/Key 投影，仅训练 Value/Output
+  - 可训练参数：~75%
+  - 保留正交初始化后的稳定注意力模式
+  
+- **OELM-QK-FFN**: 额外冻结 FFN 前馈网络
+  - 可训练参数：~65%
+  - 更强的正则化效果
 
-| Dataset | Task | Baseline | OELM | Improvement | Speedup |
-|:--------|:-----|:--------:|:----:|:-----------:|:-------:|
-| **IMDB** | Sentiment (2-class) | 78.56% | **85.70%** | +7.14% | 3.6% |
-| **AG News** | News (4-class) | 87.05% | **92.74%** | +5.69% | 5.7% |
-| **XNLI** | NLI (3-class) | 46.39% | **57.99%** | +11.60% | **21%** |
-| **MNLI** | NLI (3-class) | 45.18% | **56.78%** | +11.60% | 4.3% |
-| **Average** | - | - | - | **+8.99%** | **8.7%** |
-
-**Key Finding**: OELM effectiveness depends on **task type** (classification vs. generation), not architecture type (Encoder vs. Decoder).
+### 3. 理论优势
+- **减少过拟合**: 冻结参数提供隐式正则化
+- **训练加速**: 更少的梯度计算，更快的收敛
+- **性能提升**: 在分类任务上平均提升 +10.46%
 
 ---
 
-## 🚀 Quick Start
+## 📊 实验总览
 
-### Installation
+| 实验 | 名称 | 数据集 | 核心发现 | 完整报告 |
+|:-----|:-----|:-------|:---------|:---------|
+| **Exp 1** | BERT XNLI | XNLI (3分类) | OELM 优于 Baseline (+1.08%)，训练快 57% | [📄 查看报告](experiments/exp01-bert-xnli/report.md) |
+| **Exp 2** | GPT OELM | TinyStories | 分头正交实现成功，生成任务性能损失 -9.8% | [📄 查看报告](experiments/exp02-gpt-oelm/report.md) |
+| **Exp 3** | GPT Ablation | TinyStories, OpenWebText, WikiText | 验证正交必要性，规模效应显著 | [📄 查看报告](experiments/exp03-gpt-ablation/report.md) |
+| **Exp 4** | GPT Classification | IMDB, AG News, XNLI, MNLI | **分类任务 OELM 有效！平均 +8.14%** | [📄 查看报告](experiments/exp04-gpt-classification/report.md) |
+| **Exp 5** | BERT OELM Paper | SST-2, MNLI | 论文级验证，正交必要性确认 | [📄 查看报告](experiments/exp05-bert-paper/report.md) |
+| **Exp 6** | Multi-Dataset Validation | AG News, SST-2, XNLI, MNLI | **12/12 实验完成，平均 +10.46% 提升** | [📄 查看报告](experiments/exp06-multi-dataset/report.md) |
 
-```bash
-# Clone repository
-git clone https://github.com/Starryyu77/Orthogonal-ELM-Transformers.git
-cd Orthogonal-ELM-Transformers
+### 关键结论
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# or: venv\Scripts\activate  # Windows
+> **任务类型决定 OELM 有效性，而非架构类型**
 
-# Install dependencies
-pip install torch>=2.0.0 transformers datasets numpy scikit-learn tqdm
-```
-
-### Run Experiments
-
-#### BERT + XNLI (Paper Implementation)
-```bash
-cd Train/experiments/paper-bert-oelm
-python src/train_bert_xnli.py \
-    --model_type baseline \
-    --num_epochs 3 \
-    --batch_size 16
-```
-
-#### GPT + Classification
-```bash
-cd Train/experiments/phase4-gpt-classification
-
-# IMDB Sentiment
-./scripts/run_imdb_baseline.sh 0
-./scripts/run_imdb_oelm.sh 1
-
-# AG News
-./scripts/run_agnews_baseline.sh 0
-./scripts/run_agnews_oelm.sh 1
-
-# XNLI NLI
-./scripts/run_xnli_baseline.sh 0
-./scripts/run_xnli_oelm.sh 1
-
-# MNLI NLI
-./scripts/run_mnli_baseline.sh 0
-./scripts/run_mnli_oelm.sh 1
-```
+| 架构 | 任务类型 | OELM 效果 | 说明 |
+|:----:|:---------|:---------:|:-----|
+| BERT (Encoder) | 分类 | ✅ **有效** | +1.08%，训练快 57% |
+| GPT (Decoder) | **分类** | ✅ **有效** | **平均 +8.14% ~ +10.46%** |
+| GPT (Decoder) | 生成 | ❌ 无效 | 性能损失 -9.8% ~ -15.5% |
 
 ---
 
-## 📁 Repository Structure
+## 🗂️ 目录结构
 
 ```
 Orthogonal-ELM-Transformers/
-├── README.md                          # This file
-├── .gitignore                         # Git ignore rules
+├── README.md                    # 本文件 - 项目总览
+├── LICENSE                      # MIT 许可证
 │
-├── bert_experiments/                  # Early BERT experiments
-│   └── (legacy experiments)
-│
-├── Train/                             # Main training code
-│   ├── README.md                      # Train module documentation
+├── experiments/                 # ⭐ 实验目录
+│   ├── exp01-bert-xnli/        # 实验1: BERT XNLI
+│   │   ├── scripts/            # 运行脚本
+│   │   ├── results/            # 实验结果
+│   │   └── report.md           # 实验报告
 │   │
-│   ├── experiments/                   # All experiments
-│   │   ├── paper-bert-oelm/          # BERT + XNLI (Paper)
-│   │   │   ├── README.md
-│   │   │   ├── src/
-│   │   │   │   ├── train_bert_xnli.py
-│   │   │   │   ├── modeling_bert_oelm.py
-│   │   │   │   └── utils.py
-│   │   │   ├── docs/
-│   │   │   │   └── EXPERIMENT_REPORT_BERT_RESERVOIR.md
-│   │   │   └── results/
-│   │   │
-│   │   ├── phase2-gpt-oelm/          # GPT + TinyStories
-│   │   │   └── (generation experiments - OELM not effective)
-│   │   │
-│   │   ├── phase3-gpt-ablation/      # GPT Ablation Studies
-│   │   │   ├── REPORT.md
-│   │   │   └── (generation task ablation)
-│   │   │
-│   │   └── phase4-gpt-classification/ # GPT + Classification ✅
-│   │       ├── README.md
-│   │       ├── REPORT.md              # Phase 4 Main Report
-│   │       ├── REPORT_MNLI.md         # MNLI Detailed Report
-│   │       ├── MNLI_EXPERIMENT_PROGRESS.md
-│   │       ├── PLAN.md
-│   │       ├── models/
-│   │       │   ├── modeling_gpt_classification.py
-│   │       │   └── modeling_oelm_classification.py
-│   │       └── scripts/
-│   │           ├── train_classification.py
-│   │           ├── run_imdb_*.sh
-│   │           ├── run_agnews_*.sh
-│   │           ├── run_xnli_*.sh
-│   │           └── run_mnli_*.sh
+│   ├── exp02-gpt-oelm/         # 实验2: GPT OELM
+│   │   ├── scripts/
+│   │   ├── results/
+│   │   └── report.md
 │   │
-│   ├── tools/                         # Utility tools
-│   └── docs/                          # Documentation
+│   ├── exp03-gpt-ablation/     # 实验3: GPT 消融
+│   │   ├── scripts/
+│   │   ├── results/
+│   │   └── report.md
+│   │
+│   ├── exp04-gpt-classification/  # 实验4: GPT 分类
+│   │   ├── scripts/
+│   │   ├── results/
+│   │   └── report.md
+│   │
+│   ├── exp05-bert-paper/       # 实验5: BERT 论文实验
+│   │   ├── scripts/
+│   │   ├── results/
+│   │   └── report.md
+│   │
+│   └── exp06-multi-dataset/    # 实验6: 多数据集验证
+│       ├── scripts/
+│       ├── results/
+│       └── report.md
 │
-└── 参考材料/                           # Reference materials (Chinese)
-    └── (related papers and resources)
+└── shared/                     # 共享代码（可选）
+    └── models/                 # 共享模型定义
 ```
 
 ---
 
-## 🔬 Methodology
+## 🚀 快速开始
 
-### OELM-Freeze Architecture
+### 1. 环境准备
+
+```bash
+# 克隆仓库
+git clone https://github.com/Starryyu77/Orthogonal-ELM-Transformers.git
+cd Orthogonal-ELM-Transformers
+
+# 安装依赖
+pip install torch>=2.0.0 transformers datasets numpy scikit-learn tqdm
+```
+
+### 2. 运行实验
+
+以 **Exp 6: 多数据集验证** 为例：
+
+```bash
+# 进入实验目录
+cd experiments/exp06-multi-dataset
+
+# 查看实验报告
+cat report.md
+
+# 运行 AG News 实验
+cd scripts
+sbatch run_agnews_baseline.sh   # Baseline
+sbatch run_agnews_qk.sh         # OELM-QK
+sbatch run_agnews_qk_ffn.sh     # OELM-QK-FFN
+```
+
+### 3. 查看结果
+
+```bash
+# 查看实验结果
+cd ../results
+cat ag_news/baseline/results.json
+cat ag_news/oelm_qk_ffn/results.json
+```
+
+---
+
+## 📈 核心结果摘要
+
+### Exp 6: 多数据集验证（最新）
+
+| 数据集 | 方法 | 准确率 | 训练时间 | 可训练参数 | vs Baseline |
+|:-------|:-----|:-------|:---------|:-----------|:------------|
+| **AG News** | Baseline | 92.46% | 2h04m | 38.54M (100%) | - |
+| | **OELM-QK-FFN** | **92.32%** | **1h42m** | **25.05M (65%)** | **-0.14%** |
+| **SST-2** | Baseline | 77.29% | 18m38s | 38.54M (100%) | - |
+| | **OELM-QK-FFN** | **82.22%** | **10m08s** | **25.05M (65%)** | **+4.93%** 🏆 |
+| **XNLI** | Baseline | 52.49% | 6h15m | 38.54M (100%) | - |
+| | **OELM-QK-FFN** | **61.00%** | **5h25m** | **25.05M (65%)** | **+8.51%** 🏆 |
+| **MNLI** | Baseline | 31.82% | 6h22m | 38.54M (100%) | - |
+| | **OELM-QK-FFN** | **60.35%** | **5h28m** | **25.05M (65%)** | **+28.53%** 🏆 |
+
+**总结**: 65% 参数，15% 更快，+10.46% 平均提升
+
+---
+
+## 🔑 使用建议
+
+### 对于新的分类任务
 
 ```python
-class OELMForSequenceClassification(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        # 1. Standard Transformer with orthogonal Q/K init
-        self.transformer = TransformerEncoder(
-            d_model=config.d_model,
-            num_layers=config.num_layers,
-            num_heads=config.num_heads,
-            qk_init='orthogonal',  # Head-wise QR decomposition
-        )
+# 推荐：直接使用 OELM-QK-FFN
+from shared.models import OELMForSequenceClassification
 
-        # 2. Freeze Q/K parameters
-        for layer in self.transformer.layers:
-            layer.attention.W_q.requires_grad = False
-            layer.attention.W_k.requires_grad = False
-
-        # 3. Classification head
-        self.classifier = nn.Linear(config.d_model, num_classes)
+model = OELMForSequenceClassification(
+    d_model=512,
+    num_layers=6,
+    num_heads=8,
+    freeze_qk=True,      # 冻结 Q/K
+    freeze_ffn=True,     # 冻结 FFN
+    init_method='orthogonal'
+)
 ```
 
-### Key Hyperparameters
+### 预期效果
 
-| Parameter | Baseline | OELM-Freeze | Note |
-|:----------|:--------:|:-----------:|:-----|
-| Learning Rate | 3e-4 | **1e-3** | 3-4× higher for OELM |
-| Batch Size | 16 | 16 | Same |
-| Epochs | 2-3 | 2-3 | Same |
-| Warmup Steps | 500 | 500 | Same |
-| Weight Decay | 0.01 | 0.01 | Same |
-| Q/K Frozen | ❌ No | ✅ Yes | Key difference |
+| 任务类型 | 预期提升 | 推荐方法 |
+|:---------|:---------|:---------|
+| 自然语言推理 (NLI) | +10% ~ +30% | OELM-QK-FFN |
+| 情感分析 | +3% ~ +8% | OELM-QK-FFN |
+| 主题分类 | -1% ~ +2% | OELM-QK-FFN |
+| 文本生成 | 不推荐 | Baseline |
 
 ---
 
-## 📊 Experiment Results
+## 📚 相关资源
 
-### Detailed Results
-
-#### 1. BERT + XNLI (Paper)
-- **Baseline**: 85.06% accuracy
-- **OELM**: 86.14% accuracy
-- **Improvement**: +1.08%
-
-See: [`Train/experiments/paper-bert-oelm/docs/EXPERIMENT_REPORT_BERT_RESERVOIR.md`](Train/experiments/paper-bert-oelm/docs/EXPERIMENT_REPORT_BERT_RESERVOIR.md)
-
-#### 2. GPT + Classification (Phase 4)
-
-##### IMDB (2-class Sentiment)
-```
-Baseline:  78.56%  |  Loss: 0.639  |  Time: 22m 51s
-OELM:      85.70%  |  Loss: 0.405  |  Time: 22m 01s
-Improvement: +7.14% accuracy, -37% loss, -3.6% time
-```
-
-##### AG News (4-class News)
-```
-Baseline:  87.05%  |  Loss: 0.512  |  Time: 1h 19m 12s
-OELM:      92.74%  |  Loss: 0.266  |  Time: 1h 14m 41s
-Improvement: +5.69% accuracy, -48% loss, -5.7% time
-```
-
-##### XNLI (3-class NLI)
-```
-Baseline:  46.39%  |  Loss: 1.035  |  Time: 3h 12m 59s
-OELM:      57.99%  |  Loss: 0.902  |  Time: 2h 32m 22s
-Improvement: +11.60% accuracy, -13% loss, -21% time
-```
-
-##### MNLI (3-class NLI, Large Validation)
-```
-Baseline:  45.18%  |  Loss: 1.041  |  Time: 2h 38m 29s
-OELM:      56.78%  |  Loss: 0.899  |  Time: 2h 31m 36s
-Improvement: +11.60% accuracy, -14% loss, -4.3% time
-```
-
-See detailed reports:
-- [Phase 4 Main Report](Train/experiments/phase4-gpt-classification/REPORT.md)
-- [MNLI Detailed Report](Train/experiments/phase4-gpt-classification/REPORT_MNLI.md)
-- [OELM-QK-FFN Extension Results](EXPERIMENT_RESULTS_OELM_FFN.md)
+- **GitHub**: https://github.com/Starryyu77/Orthogonal-ELM-Transformers
+- **实验详情**: 见各实验目录下的 `report.md`
+- **服务器**: NTU EEE GPU Cluster (`10.97.216.128`)
 
 ---
 
-## 🔑 Key Insights
+## 📄 引用
 
-### 1. Task Type Determines Effectiveness
-
-| Task Type | OELM Effective? | Example |
-|:----------|:---------------:|:--------|
-| **Classification** | ✅ Yes | IMDB, AG News, XNLI, MNLI |
-| **Generation** | ❌ No | TinyStories, OpenWebText |
-
-### 2. Architecture Independence
-
-- **BERT (Encoder)**: ✅ OELM works
-- **GPT (Decoder)**: ✅ OELM works (for classification)
-
-### 3. Why NLI Tasks Benefit Most?
-
-1. **Complex Reasoning**: NLI requires understanding relationships between sentences
-2. **Bidirectional Context**: Both premise and hypothesis need full context
-3. **Orthogonal Q/K**: Maintains diverse attention patterns for nuanced inference
-
----
-
-## 🛠️ Development
-
-### Cluster Setup (NTU EEE GPU Cluster)
-
-```bash
-# SSH to cluster
-ssh username@10.97.216.128
-
-# Setup environment
-bash Train/tools/cluster_setup/01_ssh_config.sh
-bash Train/tools/cluster_setup/02_setup_storage.sh
-bash Train/tools/cluster_setup/03_setup_env.sh
-
-# Submit job
-sbatch Train/mlda-run.sh
-```
-
-### Local Development
-
-```bash
-# Install dev dependencies
-pip install black flake8 pytest
-
-# Format code
-black Train/
-
-# Run tests
-pytest Train/tests/
-```
-
----
-
-## 📚 Citation
-
-If you use this code or method in your research, please cite:
+如果本项目对您有帮助，请引用：
 
 ```bibtex
-@article{oelm2024,
+@article{oelm2025,
   title={Orthogonal ELM Transformers: Efficient Training via Q/K Freezing},
-  author={[Authors]},
-  journal={[Journal]},
-  year={2024}
+  author={Your Name},
+  journal={arXiv preprint},
+  year={2025}
 }
 ```
 
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- NTU EEE GPU Cluster for computational resources
-- Hugging Face for Transformers library
-- GLUE Benchmark for evaluation datasets
-
----
-
-## 📞 Contact
-
-For questions or issues:
-- Open an issue on GitHub
-- Contact: [your-email@example.com]
-
----
-
-## 🗺️ Roadmap
-
-- [x] BERT + XNLI implementation
-- [x] GPT + Classification (IMDB, AG News, XNLI, MNLI)
-- [x] OELM-QK-FFN extension (~65% trainable params)
-- [ ] Large model validation (GPT-Large, BERT-Large)
-- [ ] Long sequence support (1024, 2048)
-- [ ] Additional tasks (NER, QA)
-- [ ] PyTorch Lightning integration
-
----
-
-**Last Updated**: 2026-03-08
-**Version**: 1.0.0
-**Status**: Active Development
+**最后更新**: 2025年3月  
+**版本**: v2.0 (重构版)
