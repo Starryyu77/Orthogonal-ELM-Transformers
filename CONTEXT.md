@@ -1,7 +1,7 @@
 # Orthogonal ELM Transformers - 项目状态记录
 
 **最后更新**: 2025年3月19日  
-**当前状态**: ✅ 实验准备就绪，等待执行阶段1
+| **当前状态**: 🔄 Stage 1 实验进行中 (2/3 jobs running)
 
 ---
 
@@ -90,7 +90,9 @@ sbatch experiments/oelm-pretrain/scripts/run_stage1_mini.sh oelm_qk_ffn
 ## 📝 下一步行动
 
 ### 立即执行
-- [ ] 登录 NTU 服务器
+- [x] 登录 NTU 服务器
+- [x] 启动阶段1三组实验
+- [🔄] 监控训练进度
 - [ ] 启动阶段1三组实验
 - [ ] 监控训练进度
 - [ ] 记录训练结果
@@ -125,7 +127,8 @@ sbatch experiments/oelm-pretrain/scripts/run_stage1_mini.sh oelm_qk_ffn
 - [x] 创建阶段1执行脚本
 - [x] 创建快速开始指南
 - [x] 提交所有更改到 GitHub
-- [ ] ⏳ 执行阶段1实验
+- [x] 执行阶段1实验
+- [x] 更新实验进度
 - [ ] ⏳ 更新实验进度
 
 ---

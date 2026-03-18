@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/bash -l
 #SBATCH --job-name=oelm-s1-mini
 #SBATCH --partition=cluster02
-#SBATCH --gpus=pro-6000:1
+#SBATCH --gres=gpu:a5000:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
 #SBATCH --time=5:00:00
@@ -24,7 +24,8 @@ echo "=========================================="
 cd /projects/LlamaFactory/OELM-Pretrain
 
 # Load environment
-source ~/miniconda3/etc/profile.d/conda.sh
+module load Miniforge3
+source activate
 conda activate oelm
 
 # Create output directory
