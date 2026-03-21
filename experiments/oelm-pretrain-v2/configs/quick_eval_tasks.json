@@ -1,0 +1,36 @@
+{
+  "phase": "phase2_quick",
+  "seeds": [13, 42, 3407],
+  "settings": {
+    "setting_a": {
+      "unfreeze_layer_norms": false,
+      "unfreeze_top_blocks": 0,
+      "description": "Freeze backbone; train probe only."
+    }
+  },
+  "tasks": {
+    "sst2": {
+      "dataset_name": "glue",
+      "dataset_config": "sst2",
+      "train_split": "train",
+      "dev_split": "validation",
+      "text_keys": ["sentence"],
+      "label_key": "label",
+      "num_labels": 2,
+      "max_train_samples": 5000,
+      "max_dev_samples": null
+    },
+    "ag_news": {
+      "dataset_name": "ag_news",
+      "dataset_config": null,
+      "train_split": "train",
+      "dev_split": null,
+      "text_keys": ["text"],
+      "label_key": "label",
+      "num_labels": 4,
+      "train_dev_split": 0.0909,
+      "max_train_samples": 5000,
+      "max_dev_samples": 5000
+    }
+  }
+}
