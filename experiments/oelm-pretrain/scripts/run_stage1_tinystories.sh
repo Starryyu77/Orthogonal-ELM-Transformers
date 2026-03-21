@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=oelm-stage1-tinystories
 #SBATCH --partition=cluster02
-#SBATCH --gpus=pro-6000:1
+#SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
 #SBATCH --time=6:00:00

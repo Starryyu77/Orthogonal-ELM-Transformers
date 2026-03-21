@@ -1,0 +1,101 @@
+{
+  "phase": "phase5_broad_eval",
+  "seeds": [13, 42, 3407],
+  "settings": {
+    "setting_a": {
+      "unfreeze_layer_norms": false,
+      "unfreeze_top_blocks": 0,
+      "description": "Freeze backbone; train probe only."
+    },
+    "setting_b": {
+      "unfreeze_layer_norms": true,
+      "unfreeze_top_blocks": 0,
+      "description": "Freeze backbone except LayerNorms; train probe."
+    },
+    "setting_c": {
+      "unfreeze_layer_norms": true,
+      "unfreeze_top_blocks": 2,
+      "description": "Unfreeze top 2 blocks plus LayerNorms and probe."
+    }
+  },
+  "tasks": {
+    "sst2": {
+      "dataset_name": "glue",
+      "dataset_config": "sst2",
+      "train_split": "train",
+      "dev_split": "validation",
+      "test_split": null,
+      "text_keys": ["sentence"],
+      "label_key": "label",
+      "num_labels": 2,
+      "metrics": ["accuracy", "weighted_f1", "binary_f1"]
+    },
+    "ag_news": {
+      "dataset_name": "ag_news",
+      "dataset_config": null,
+      "train_split": "train",
+      "dev_split": null,
+      "test_split": "test",
+      "text_keys": ["text"],
+      "label_key": "label",
+      "num_labels": 4,
+      "train_dev_split": 0.0909,
+      "metrics": ["accuracy", "weighted_f1"]
+    },
+    "mnli": {
+      "dataset_name": "glue",
+      "dataset_config": "mnli",
+      "train_split": "train",
+      "dev_split": "validation_matched",
+      "test_split": null,
+      "text_keys": ["premise", "hypothesis"],
+      "label_key": "label",
+      "num_labels": 3,
+      "metrics": ["accuracy", "weighted_f1"]
+    },
+    "qnli": {
+      "dataset_name": "glue",
+      "dataset_config": "qnli",
+      "train_split": "train",
+      "dev_split": "validation",
+      "test_split": null,
+      "text_keys": ["question", "sentence"],
+      "label_key": "label",
+      "num_labels": 2,
+      "metrics": ["accuracy", "weighted_f1", "binary_f1"]
+    },
+    "qqp": {
+      "dataset_name": "glue",
+      "dataset_config": "qqp",
+      "train_split": "train",
+      "dev_split": "validation",
+      "test_split": null,
+      "text_keys": ["question1", "question2"],
+      "label_key": "label",
+      "num_labels": 2,
+      "metrics": ["accuracy", "weighted_f1", "binary_f1"]
+    },
+    "mrpc": {
+      "dataset_name": "glue",
+      "dataset_config": "mrpc",
+      "train_split": "train",
+      "dev_split": "validation",
+      "test_split": null,
+      "text_keys": ["sentence1", "sentence2"],
+      "label_key": "label",
+      "num_labels": 2,
+      "metrics": ["accuracy", "weighted_f1", "binary_f1"]
+    },
+    "rte": {
+      "dataset_name": "glue",
+      "dataset_config": "rte",
+      "train_split": "train",
+      "dev_split": "validation",
+      "test_split": null,
+      "text_keys": ["sentence1", "sentence2"],
+      "label_key": "label",
+      "num_labels": 2,
+      "metrics": ["accuracy", "weighted_f1", "binary_f1"]
+    }
+  }
+}

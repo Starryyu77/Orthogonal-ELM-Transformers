@@ -1,0 +1,19 @@
+{
+  "methods": {
+    "baseline": {
+      "freeze_qk": false,
+      "freeze_ffn": false,
+      "description": "Standard trainable baseline."
+    },
+    "qk_only": {
+      "freeze_qk": true,
+      "freeze_ffn": false,
+      "description": "Freeze attn_q and attn_k only."
+    },
+    "qk_ffn": {
+      "freeze_qk": true,
+      "freeze_ffn": true,
+      "description": "Freeze attn_q, attn_k, mlp_in, and mlp_out."
+    }
+  }
+}

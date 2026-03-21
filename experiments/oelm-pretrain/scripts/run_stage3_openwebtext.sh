@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=oelm-stage3-openwebtext
 #SBATCH --partition=cluster02
-#SBATCH --gpus=pro-6000:2
+#SBATCH --gres=gpu:2
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=128G
 #SBATCH --time=7-00:00:00

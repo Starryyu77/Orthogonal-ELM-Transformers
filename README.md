@@ -44,6 +44,13 @@ OELM (Orthogonal Extreme Learning Machine) 是一种高效的 Transformer 训练
 | **Exp 5** | BERT OELM Paper | SST-2, MNLI | 论文级验证，正交必要性确认 | [📄 查看报告](experiments/exp05-bert-paper/report.md) |
 | **Exp 6** | Multi-Dataset Validation | AG News, SST-2, XNLI, MNLI | **12/12 实验完成，平均 +10.46% 提升** | [📄 查看报告](experiments/exp06-multi-dataset/report.md) |
 
+### 当前正式实验线
+
+- `experiments/oelm-pretrain/`: 旧的 pilot/legacy 预训练验证目录，保留作参考。
+- `experiments/oelm-pretrain-v2/`: 当前正式的 V2 预训练验证目录。
+- V2 的原则是先做冻结逻辑和资源记录审计，再解释预训练与下游结果。
+- V2 的所有正式 cluster 作业统一固定在 `cluster02 + gpu:pro6000`。
+
 ### 关键结论
 
 > **任务类型决定 OELM 有效性，而非架构类型**
@@ -94,6 +101,19 @@ Orthogonal-ELM-Transformers/
 │       ├── results/
 │       └── report.md
 │
+│   ├── oelm-pretrain/          # 旧 pilot 预训练验证目录
+│   │   ├── scripts/
+│   │   └── QUICKSTART.md
+│   │
+│   └── oelm-pretrain-v2/       # 当前正式 V2 预训练验证目录
+│       ├── PLAN.md
+│       ├── README.md
+│       ├── configs/
+│       ├── scripts/
+│       ├── audits/
+│       ├── reports/
+│       └── manifests/
+│
 └── shared/                     # 共享代码（可选）
     └── models/                 # 共享模型定义
 ```
@@ -129,6 +149,22 @@ cd scripts
 sbatch run_agnews_baseline.sh   # Baseline
 sbatch run_agnews_qk.sh         # OELM-QK
 sbatch run_agnews_qk_ffn.sh     # OELM-QK-FFN
+```
+
+### 2.1 运行当前 V2 预训练验证
+
+```bash
+# 进入 V2 目录
+cd experiments/oelm-pretrain-v2
+
+# 查看 V2 计划
+cat PLAN.md
+
+# 查看 V2 使用说明
+cat README.md
+
+# Cluster 运行脚本位于 scripts/
+ls scripts/run_phase*.sh
 ```
 
 ### 3. 查看结果
